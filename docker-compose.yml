@@ -1,29 +1,57 @@
 services:
   db:
     image: mysql:8.0
+    container_name: singitronic-db
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
       MYSQL_DATABASE: singitronic_nextjs
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
 
   backend:
     build: ./server
+    container_name: singitronic-backend
+    ports:
+      - "3001:3001"
     environment:
       DATABASE_URL: mysql://root:rootpass@db:3306/singitronic_nextjs?sslmode=disabled
       NODE_ENV: production
+      PORT: 3001
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
 
   frontend:
     build: .
+    container_name: singitronic-frontend
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_BASE_URL: http://backend:3001
+      DATABASE_URL: mysql://root:rootpass@db:3306/singitronic_nextjs?sslmode=disabled
+      # SERVER-SIDE: Next.js server -> backend container (Docker internal network)
+      API_BASE_URL: http://backend:3001
+      # CLIENT-SIDE: Browser -> backend via localhost
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
+      NEXTAUTH_SECRET: 12D16C923BA17672F89B18C1DB22A
+      NEXTAUTH_URL: http://localhost:3000
       NODE_ENV: production
     depends_on:
       - backend
+      - db
+    networks:
+      - app-network
 
 volumes:
   mysql_data:
+
+networks:
+  app-network:
+    driver: bridge

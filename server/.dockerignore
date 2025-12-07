@@ -1,5 +1,4 @@
 # server/.dockerignore
-
 node_modules
 logs/
 *.log
