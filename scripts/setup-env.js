@@ -59,14 +59,21 @@ done
 
 echo "✅ MySQL is ready!"
 
+# Generate Prisma Client (ensure it's available)
+echo "🔧 Generating Prisma Client..."
+npx prisma generate
+
 # Run migrations
 echo "🔄 Running database migrations..."
-npx prisma migrate deploy || true
+npx prisma migrate deploy || echo "⚠️  No migrations to apply"
 
 # Seed database (optional)
 if [ -f "utils/insertDemoData.js" ]; then
   echo "🌱 Seeding database..."
-  node utils/insertDemoData.js || true
+  node utils/insertDemoData.js || echo "⚠️  Seeding skipped"
+elif [ -f "utills/insertDemoData.js" ]; then
+  echo "🌱 Seeding database..."
+  node utills/insertDemoData.js || echo "⚠️  Seeding skipped"
 fi
 
 # Start the application

@@ -21,6 +21,10 @@ done
 
 echo "✅ MySQL is ready!"
 
+# Generate Prisma Client (just in case)
+echo "🔧 Generating Prisma Client..."
+npx prisma generate
+
 # Run migrations
 echo "🔄 Running database migrations..."
 npx prisma migrate deploy
