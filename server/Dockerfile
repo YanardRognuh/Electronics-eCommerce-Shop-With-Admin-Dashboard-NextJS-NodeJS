@@ -1,21 +1,25 @@
-# ./server/Dockerfile
 FROM node:20-alpine
+
+# Install netcat for health checks
+RUN apk add --no-cache netcat-openbsd
 
 WORKDIR /app
 
-# Instal deps dulu (cache-friendly)
+# Copy package files
 COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
 
-# Baru copy kode
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy application files
 COPY . .
 
-RUN npx prisma generate
+# Make start.sh executable and ensure LF line endings
+RUN chmod +x start.sh && \
+    # Convert CRLF to LF if needed
+    sed -i 's/\r$//' start.sh
 
 EXPOSE 3001
 
-# Tambahkan di akhir
-COPY start.sh ./
-RUN chmod +x start.sh
-CMD ["./start.sh"]
-
+# Use start.sh as entrypoint
+CMD ["sh", "start.sh"]

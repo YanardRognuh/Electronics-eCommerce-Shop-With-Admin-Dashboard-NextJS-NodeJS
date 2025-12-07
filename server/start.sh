@@ -1,16 +1,36 @@
 #!/bin/sh
 # server/start.sh
 
-# Tunggu database siap (opsional tapi disarankan)
-echo "⏳ Waiting for MySQL..."
+set -e  # Exit on error
+
+echo "⏳ Waiting for MySQL to be ready..."
+
+# Wait for MySQL to be available
+max_retries=30
+retry_count=0
+
 while ! nc -z db 3306; do
-  sleep 1
+  retry_count=$((retry_count + 1))
+  if [ $retry_count -gt $max_retries ]; then
+    echo "❌ MySQL failed to start after $max_retries attempts"
+    exit 1
+  fi
+  echo "Attempt $retry_count/$max_retries - MySQL not ready yet..."
+  sleep 2
 done
+
 echo "✅ MySQL is ready!"
 
-# Jalankan migrasi & seed
+# Run migrations
+echo "🔄 Running database migrations..."
 npx prisma migrate deploy
-node utills/insertDemoData.js
 
-# Jalankan app
+# Seed database (optional)
+if [ -f "utils/insertDemoData.js" ]; then
+  echo "🌱 Seeding database..."
+  node utils/insertDemoData.js
+fi
+
+# Start the application
+echo "🚀 Starting backend server..."
 exec node app.js

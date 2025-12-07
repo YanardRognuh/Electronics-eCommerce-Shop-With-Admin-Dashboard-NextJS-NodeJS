@@ -8,7 +8,18 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-prootpass",
+        ]
+      interval: 5s
       timeout: 5s
       retries: 10
     networks:
@@ -28,6 +39,8 @@ services:
         condition: service_healthy
     networks:
       - app-network
+    # Debug: Tambahkan ini jika masih error
+    # command: sh -c "ls -la /app && cat start.sh && sh start.sh"
 
   frontend:
     build: .
@@ -36,16 +49,16 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: mysql://root:rootpass@db:3306/singitronic_nextjs?sslmode=disabled
-      # SERVER-SIDE: Next.js server -> backend container (Docker internal network)
       API_BASE_URL: http://backend:3001
-      # CLIENT-SIDE: Browser -> backend via localhost
       NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
       NEXTAUTH_SECRET: 12D16C923BA17672F89B18C1DB22A
       NEXTAUTH_URL: http://localhost:3000
       NODE_ENV: production
     depends_on:
-      - backend
-      - db
+      backend:
+        condition: service_started
+      db:
+        condition: service_healthy
     networks:
       - app-network
 
