@@ -3,29 +3,26 @@ import apiClient from "@/lib/api";
 import React from "react";
 import { sanitize } from "@/lib/sanitize";
 
-interface Props {
-  searchParams: { search: string };
-}
-
-// sending api request for search results for a given search text
-const SearchPage = async ({ searchParams }: Props) => {
-  const sp = await searchParams;
+// Tidak perlu interface Props
+const SearchPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>;
+}) => {
+  const sp = await searchParams; // sekarang aman
   let products = [];
 
   try {
-    const data = await apiClient.get(
-      `/api/search?query=${sp?.search || ""}`
-    );
-
+    const data = await apiClient.get(`/api/search?query=${sp?.search || ""}`);
     if (!data.ok) {
-      console.error('Failed to fetch search results:', data.statusText);
+      console.error("Failed to fetch search results:", data.statusText);
       products = [];
     } else {
       const result = await data.json();
       products = Array.isArray(result) ? result : [];
     }
   } catch (error) {
-    console.error('Error fetching search results:', error);
+    console.error("Error fetching search results:", error);
     products = [];
   }
 
@@ -55,7 +52,3 @@ const SearchPage = async ({ searchParams }: Props) => {
 };
 
 export default SearchPage;
-
-/*
-
-*/

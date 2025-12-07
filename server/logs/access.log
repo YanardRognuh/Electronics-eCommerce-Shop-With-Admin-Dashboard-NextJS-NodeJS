@@ -1229,3 +1229,7 @@
 ::1 - - [25/Nov/2025:22:59:59 +0000] "OPTIONS /api/notifications/51b06495-3fad-42be-9be3-c190feeed461/unread-count HTTP/1.1" 204 0 "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" reqId=z1-f722O userId=anonymous
 ::1 - - [25/Nov/2025:22:59:59 +0000] "GET /api/notifications/51b06495-3fad-42be-9be3-c190feeed461/unread-count HTTP/1.1" 304 - "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" reqId=hz8-FENX userId=anonymous
 ::1 - - [26/Nov/2025:04:14:23 +0000] "GET /api/products HTTP/1.1" 500 97 "-" "node" reqId=ulgnmisT userId=anonymous
+::1 - - [07/Dec/2025:14:35:32 +0000] "GET /api/products HTTP/1.1" 500 97 "-" "node" reqId=2qw8DVOR userId=anonymous
+::1 - - [07/Dec/2025:14:46:22 +0000] "GET /api/products HTTP/1.1" 500 97 "-" "node" reqId=wg4SGQ4t userId=anonymous
+::1 - - [07/Dec/2025:14:48:21 +0000] "GET /api/products HTTP/1.1" 500 97 "-" "node" reqId=L7DOXG56 userId=anonymous
+::1 - - [07/Dec/2025:15:10:03 +0000] "GET /api/products HTTP/1.1" 200 3571 "-" "node" reqId=n2r7cSdE userId=anonymous

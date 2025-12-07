@@ -1,8 +1,7 @@
-"use client"
+"use client";
 import { useWishlistStore } from "@/app/_zustand/wishlistStore";
-import WishItem from "@/components/WishItem";
+// import WishItem from "@/components/WishItem";  // ❌ Nonaktifkan sementara
 import apiClient from "@/lib/api";
-import { nanoid } from "nanoid";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 
@@ -11,45 +10,52 @@ export const WishlistModule = () => {
   const { wishlist, setWishlist } = useWishlistStore();
 
   const getWishlistByUserId = async (id: string) => {
-    const response = await apiClient.get(`/api/wishlist/${id}`, {
-      cache: "no-store",
-    });
-    const wishlist = await response.json();
+    try {
+      const response = await apiClient.get(`/api/wishlist/${id}`, {
+        cache: "no-store",
+      });
+      const wishlistData = await response.json();
 
-    const productArray: {
-      id: string;
-      title: string;
-      price: number;
-      image: string;
-      slug: string
-      stockAvailabillity: number;
-    }[] = [];
+      const productArray = wishlistData.map((item: any) => ({
+        id: item?.product?.id,
+        title: item?.product?.title,
+        price: item?.product?.price,
+        image: item?.product?.mainImage,
+        slug: item?.product?.slug,
+        stockAvailabillity: item?.product?.inStock,
+      }));
 
-    wishlist.map((item: any) => productArray.push({ id: item?.product?.id, title: item?.product?.title, price: item?.product?.price, image: item?.product?.mainImage, slug: item?.product?.slug, stockAvailabillity: item?.product?.inStock }));
-
-    setWishlist(productArray);
+      setWishlist(productArray);
+    } catch (error) {
+      console.error("Failed to fetch wishlist:", error);
+    }
   };
 
   const getUserByEmail = async () => {
     if (session?.user?.email) {
-      apiClient.get(`/api/users/email/${session?.user?.email}`, {
-        cache: "no-store",
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          getWishlistByUserId(data?.id);
-        });
+      try {
+        const response = await apiClient.get(
+          `/api/users/email/${session.user.email}`,
+          {
+            cache: "no-store",
+          }
+        );
+        const data = await response.json();
+        getWishlistByUserId(data?.id);
+      } catch (error) {
+        console.error("Failed to fetch user by email:", error);
+      }
     }
   };
 
   useEffect(() => {
     getUserByEmail();
-  }, [session?.user?.email, wishlist.length]);
+  }, [session?.user?.email]);
+
   return (
     <>
-
-      {wishlist && wishlist.length === 0 ? (
-        <h3 className="text-center text-4xl py-10 text-black max-lg:text-3xl max-sm:text-2xl max-sm:pt-5 max-[400px]:text-xl">
+      {wishlist.length === 0 ? (
+        <h3 className="text-center text-4xl py-10 text-black max-lg:text-3xl max-sm:text-2xl max-[400px]:text-xl">
           No items found in the wishlist
         </h3>
       ) : (
@@ -66,23 +72,21 @@ export const WishlistModule = () => {
                 </tr>
               </thead>
               <tbody>
-                {wishlist &&
-                  wishlist?.map((item) => (
-                    <WishItem
-                      id={item?.id}
-                      title={item?.title}
-                      price={item?.price}
-                      image={item?.image}
-                      slug={item?.slug}
-                      stockAvailabillity={item?.stockAvailabillity}
-                      key={nanoid()}
-                    />
-                  ))}
+                {wishlist.map((item) => (
+                  <tr key={item.id}>
+                    <td>Placeholder</td>
+                    <td>{item.title}</td>
+                    <td>
+                      {item.stockAvailabillity ? "In Stock" : "Out of Stock"}
+                    </td>
+                    <td>Actions disabled (wishlist UI incomplete)</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         </div>
       )}
     </>
-  )
-}
+  );
+};

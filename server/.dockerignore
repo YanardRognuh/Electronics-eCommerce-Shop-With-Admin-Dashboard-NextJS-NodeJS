@@ -1,0 +1,6 @@
+# server/.dockerignore
+
+node_modules
+logs/
+*.log
+npm-debug.log*

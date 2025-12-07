@@ -1,5 +1,6 @@
+// utils/auth.ts
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import authOptions from "@/lib/auth-options"; // ✅ impor dari modul konfigurasi bersih
 
 export async function isAdmin(): Promise<boolean> {
   const session = await getServerSession(authOptions);
