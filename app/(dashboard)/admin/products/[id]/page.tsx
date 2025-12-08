@@ -139,16 +139,26 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
   }, [id]);
 
   return (
-    <div className="bg-white flex justify-start max-w-screen-2xl mx-auto xl:h-full max-xl:flex-col max-xl:gap-y-5">
-      <DashboardSidebar />
+    <div
+      className="bg-white flex justify-start max-w-screen-2xl mx-auto xl:h-full max-xl:flex-col max-xl:gap-y-5"
+      data-testid="dashboard-product-details-container"
+    >
+      <DashboardSidebar data-testid="dashboard-sidebar" />
       <div className="flex flex-col gap-y-7 xl:ml-5 w-full max-xl:px-5">
-        <h1 className="text-3xl font-semibold">Product details</h1>
+        <h1
+          className="text-3xl font-semibold"
+          data-testid="product-details-title"
+        >
+          Product details
+        </h1>
         {/* Product name input div - start */}
-        
-        <div>
+
+        <div data-testid="product-name-input-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Product name:</span>
+              <span className="label-text" data-testid="product-name-label">
+                Product name:
+              </span>
             </div>
             <input
               type="text"
@@ -157,16 +167,19 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
               onChange={(e) =>
                 setProduct({ ...product!, title: e.target.value })
               }
+              data-testid="product-name-input"
             />
           </label>
         </div>
         {/* Product name input div - end */}
         {/* Product price input div - start */}
 
-        <div>
+        <div data-testid="product-price-input-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Product price:</span>
+              <span className="label-text" data-testid="product-price-label">
+                Product price:
+              </span>
             </div>
             <input
               type="text"
@@ -175,15 +188,21 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
               onChange={(e) =>
                 setProduct({ ...product!, price: Number(e.target.value) })
               }
+              data-testid="product-price-input"
             />
           </label>
         </div>
         {/* Product price input div - end */}
         {/* Product manufacturer input div - start */}
-        <div>
+        <div data-testid="product-manufacturer-input-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Manufacturer:</span>
+              <span
+                className="label-text"
+                data-testid="product-manufacturer-label"
+              >
+                Manufacturer:
+              </span>
             </div>
             <input
               type="text"
@@ -192,16 +211,19 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
               onChange={(e) =>
                 setProduct({ ...product!, manufacturer: e.target.value })
               }
+              data-testid="product-manufacturer-input"
             />
           </label>
         </div>
         {/* Product manufacturer input div - end */}
         {/* Product slug input div - start */}
 
-        <div>
+        <div data-testid="product-slug-input-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Slug:</span>
+              <span className="label-text" data-testid="product-slug-label">
+                Slug:
+              </span>
             </div>
             <input
               type="text"
@@ -215,16 +237,19 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
                   slug: convertSlugToURLFriendly(e.target.value),
                 })
               }
+              data-testid="product-slug-input"
             />
           </label>
         </div>
         {/* Product slug input div - end */}
         {/* Product inStock select input div - start */}
 
-        <div>
+        <div data-testid="product-instock-input-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Is product in stock?</span>
+              <span className="label-text" data-testid="product-instock-label">
+                Is product in stock?
+              </span>
             </div>
             <select
               className="select select-bordered"
@@ -232,18 +257,25 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
               onChange={(e) => {
                 setProduct({ ...product!, inStock: Number(e.target.value) });
               }}
+              data-testid="product-instock-select"
             >
-              <option value={1}>Yes</option>
-              <option value={0}>No</option>
+              <option value={1} data-testid="instock-option-yes">
+                Yes
+              </option>
+              <option value={0} data-testid="instock-option-no">
+                No
+              </option>
             </select>
           </label>
         </div>
         {/* Product inStock select input div - end */}
         {/* Product category select input div - start */}
-        <div>
+        <div data-testid="product-category-input-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Category:</span>
+              <span className="label-text" data-testid="product-category-label">
+                Category:
+              </span>
             </div>
             <select
               className="select select-bordered"
@@ -254,10 +286,15 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
                   categoryId: e.target.value,
                 })
               }
+              data-testid="product-category-select"
             >
               {categories &&
                 categories.map((category: Category) => (
-                  <option key={category?.id} value={category?.id}>
+                  <option
+                    key={category?.id}
+                    value={category?.id}
+                    data-testid={`category-option-${category?.id}`}
+                  >
                     {formatCategoryName(category?.name)}
                   </option>
                 ))}
@@ -267,7 +304,7 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
         {/* Product category select input div - end */}
 
         {/* Main image file upload div - start */}
-        <div>
+        <div data-testid="main-image-upload-container">
           <input
             type="file"
             className="file-input file-input-bordered file-input-lg w-full max-w-sm"
@@ -280,6 +317,7 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
                 setProduct({ ...product!, mainImage: selectedFile.name });
               }
             }}
+            data-testid="main-image-upload-input"
           />
           {product?.mainImage && (
             <Image
@@ -288,12 +326,13 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
               className="w-auto h-auto mt-2"
               width={100}
               height={100}
+              data-testid="main-image-preview"
             />
           )}
         </div>
         {/* Main image file upload div - end */}
         {/* Other images file upload div - start */}
-        <div className="flex gap-x-1">
+        <div className="flex gap-x-1" data-testid="other-images-container">
           {otherImages &&
             otherImages.map((image) => (
               <Image
@@ -303,15 +342,21 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
                 width={100}
                 height={100}
                 className="w-auto h-auto"
+                data-testid={`other-image-${image.imageID}`}
               />
             ))}
         </div>
         {/* Other images file upload div - end */}
         {/* Product description div - start */}
-        <div>
+        <div data-testid="product-description-input-container">
           <label className="form-control">
             <div className="label">
-              <span className="label-text">Product description:</span>
+              <span
+                className="label-text"
+                data-testid="product-description-label"
+              >
+                Product description:
+              </span>
             </div>
             <textarea
               className="textarea textarea-bordered h-24"
@@ -319,16 +364,21 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
               onChange={(e) =>
                 setProduct({ ...product!, description: e.target.value })
               }
+              data-testid="product-description-textarea"
             ></textarea>
           </label>
         </div>
         {/* Product description div - end */}
         {/* Action buttons div - start */}
-        <div className="flex gap-x-2 max-sm:flex-col">
+        <div
+          className="flex gap-x-2 max-sm:flex-col"
+          data-testid="product-actions-container"
+        >
           <button
             type="button"
             onClick={updateProduct}
             className="uppercase bg-blue-500 px-10 py-5 text-lg border border-black border-gray-300 font-bold text-white shadow-sm hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2"
+            data-testid="update-product-button"
           >
             Update product
           </button>
@@ -336,12 +386,16 @@ const DashboardProductDetails = ({ params }: DashboardProductDetailsProps) => {
             type="button"
             className="uppercase bg-red-600 px-10 py-5 text-lg border border-black border-gray-300 font-bold text-white shadow-sm hover:bg-red-700 hover:text-white focus:outline-none focus:ring-2"
             onClick={deleteProduct}
+            data-testid="delete-product-button"
           >
             Delete product
           </button>
         </div>
         {/* Action buttons div - end */}
-        <p className="text-xl max-sm:text-lg text-error">
+        <p
+          className="text-xl max-sm:text-lg text-error"
+          data-testid="product-delete-warning"
+        >
           To delete the product you first need to delete all its records in
           orders (customer_order_product table).
         </p>

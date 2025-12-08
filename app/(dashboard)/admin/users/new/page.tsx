@@ -71,14 +71,21 @@ const DashboardCreateNewUser = () => {
   };
 
   return (
-    <div className="bg-white flex justify-start max-w-screen-2xl mx-auto xl:h-full max-xl:flex-col max-xl:gap-y-5">
-      <DashboardSidebar />
+    <div
+      className="bg-white flex justify-start max-w-screen-2xl mx-auto xl:h-full max-xl:flex-col max-xl:gap-y-5"
+      data-testid="dashboard-create-new-user-container"
+    >
+      <DashboardSidebar data-testid="dashboard-sidebar" />
       <div className="flex flex-col gap-y-7 xl:pl-5 max-xl:px-5 w-full">
-        <h1 className="text-3xl font-semibold">Add new user</h1>
-        <div>
+        <h1 className="text-3xl font-semibold" data-testid="add-new-user-title">
+          Add new user
+        </h1>
+        <div data-testid="user-email-input-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Email:</span>
+              <span className="label-text" data-testid="user-email-label">
+                Email:
+              </span>
             </div>
             <input
               type="email"
@@ -87,14 +94,17 @@ const DashboardCreateNewUser = () => {
               onChange={(e) =>
                 setUserInput({ ...userInput, email: e.target.value })
               }
+              data-testid="user-email-input"
             />
           </label>
         </div>
 
-        <div>
+        <div data-testid="user-password-input-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Password:</span>
+              <span className="label-text" data-testid="user-password-label">
+                Password:
+              </span>
             </div>
             <input
               type="password"
@@ -103,14 +113,17 @@ const DashboardCreateNewUser = () => {
               onChange={(e) =>
                 setUserInput({ ...userInput, password: e.target.value })
               }
+              data-testid="user-password-input"
             />
           </label>
         </div>
 
-        <div>
+        <div data-testid="user-role-select-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">User role: </span>
+              <span className="label-text" data-testid="user-role-label">
+                User role:{" "}
+              </span>
             </div>
             <select
               className="select select-bordered"
@@ -118,18 +131,27 @@ const DashboardCreateNewUser = () => {
               onChange={(e) =>
                 setUserInput({ ...userInput, role: e.target.value })
               }
+              data-testid="user-role-select"
             >
-              <option value="admin">admin</option>
-              <option value="user">user</option>
+              <option value="admin" data-testid="role-option-admin">
+                admin
+              </option>
+              <option value="user" data-testid="role-option-user">
+                user
+              </option>
             </select>
           </label>
         </div>
 
-        <div className="flex gap-x-2">
+        <div
+          className="flex gap-x-2"
+          data-testid="create-user-button-container"
+        >
           <button
             type="button"
             className="uppercase bg-blue-500 px-10 py-5 text-lg border border-black font-bold text-white shadow-sm hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2"
             onClick={addNewUser}
+            data-testid="create-user-button"
           >
             Create user
           </button>

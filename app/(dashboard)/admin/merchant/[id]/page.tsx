@@ -34,7 +34,7 @@ export default function MerchantDetailPage({
   // Unwrap params using React.use()
   const resolvedParams = use(params);
   const id = resolvedParams.id;
-  
+
   const [merchant, setMerchant] = useState<Merchant | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -52,7 +52,7 @@ export default function MerchantDetailPage({
     try {
       setLoading(true);
       const response = await apiClient.get(`/api/merchants/${id}`);
-      
+
       if (!response.ok) {
         if (response.status === 404) {
           router.push("/admin/merchant");
@@ -60,7 +60,7 @@ export default function MerchantDetailPage({
         }
         throw new Error("Failed to fetch merchant");
       }
-      
+
       const data = await response.json();
       setMerchant(data);
       setFormData({
@@ -81,9 +81,9 @@ export default function MerchantDetailPage({
 
   useEffect(() => {
     fetchMerchant();
-  }, [id]); 
+  }, [id]);
 
-const handleInputChange = (
+  const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
@@ -92,45 +92,46 @@ const handleInputChange = (
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  try {
-    // This is the correct way to use apiClient.put
-    // It should just take the URL and the data object
-    const response = await apiClient.put(`/api/merchants/${id}`, formData);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // This is the correct way to use apiClient.put
+      // It should just take the URL and the data object
+      const response = await apiClient.put(`/api/merchants/${id}`, formData);
 
-    if (!response.ok) {
-      throw new Error("Failed to update merchant");
+      if (!response.ok) {
+        throw new Error("Failed to update merchant");
+      }
+
+      toast.success("Merchant updated successfully");
+      fetchMerchant(); // Refresh data
+    } catch (error) {
+      console.error("Error updating merchant:", error);
+      toast.error("Failed to update merchant");
     }
-
-    toast.success("Merchant updated successfully");
-    fetchMerchant(); // Refresh data
-  } catch (error) {
-    console.error("Error updating merchant:", error);
-    toast.error("Failed to update merchant");
-  }
-};
+  };
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this merchant?")) {
       return;
     }
-    
+
     try {
       const response = await apiClient.delete(`/api/merchants/${id}`);
-      
+
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || "Failed to delete merchant");
       }
-      
+
       toast.success("Merchant deleted successfully");
       router.push("/admin/merchant");
     } catch (error) {
       console.error("Error deleting merchant:", error);
       toast.error(
         typeof error === "object" && error !== null && "message" in error
-          ? (error as { message?: string }).message || "Failed to delete merchant"
+          ? (error as { message?: string }).message ||
+              "Failed to delete merchant"
           : "Failed to delete merchant"
       );
     }
@@ -138,9 +139,15 @@ const handleInputChange = (
 
   if (loading) {
     return (
-      <div className="flex h-screen">
-        <DashboardSidebar />
-        <div className="flex-1 p-10 flex items-center justify-center">
+      <div
+        className="flex h-screen"
+        data-testid="merchant-detail-page-container"
+      >
+        <DashboardSidebar data-testid="dashboard-sidebar" />
+        <div
+          className="flex-1 p-10 flex items-center justify-center"
+          data-testid="loading-container"
+        >
           Loading merchant details...
         </div>
       </div>
@@ -149,9 +156,15 @@ const handleInputChange = (
 
   if (!merchant) {
     return (
-      <div className="flex h-screen">
-        <DashboardSidebar />
-        <div className="flex-1 p-10 flex items-center justify-center">
+      <div
+        className="flex h-screen"
+        data-testid="merchant-detail-page-container"
+      >
+        <DashboardSidebar data-testid="dashboard-sidebar" />
+        <div
+          className="flex-1 p-10 flex items-center justify-center"
+          data-testid="not-found-container"
+        >
           Merchant not found
         </div>
       </div>
@@ -159,31 +172,53 @@ const handleInputChange = (
   }
 
   return (
-    <div className="flex h-screen">
-      <DashboardSidebar />
+    <div className="flex h-screen" data-testid="merchant-detail-page-container">
+      <DashboardSidebar data-testid="dashboard-sidebar" />
       <div className="flex-1 p-10 overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Merchant Details</h1>
-          <div className="flex gap-4">
+        <div
+          className="flex justify-between items-center mb-6"
+          data-testid="page-header-container"
+        >
+          <h1
+            className="text-3xl font-bold"
+            data-testid="merchant-details-title"
+          >
+            Merchant Details
+          </h1>
+          <div className="flex gap-4" data-testid="page-actions-container">
             <Link
               href="/admin/merchant"
               className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition"
+              data-testid="back-to-merchants-link"
             >
               Back to Merchants
             </Link>
             <button
               onClick={handleDelete}
               className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition"
+              data-testid="delete-merchant-button"
             >
               Delete Merchant
             </button>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">Name</label>
+        <div
+          className="bg-white rounded-lg shadow-md p-6 mb-6"
+          data-testid="merchant-form-container"
+        >
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            data-testid="merchant-form"
+          >
+            <div data-testid="merchant-name-input-container">
+              <label
+                className="block text-gray-700 font-medium mb-2"
+                data-testid="merchant-name-label"
+              >
+                Name
+              </label>
               <input
                 type="text"
                 name="name"
@@ -191,63 +226,108 @@ const handleInputChange = (
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
                 required
+                data-testid="merchant-name-input"
               />
             </div>
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">Email</label>
+            <div data-testid="merchant-email-input-container">
+              <label
+                className="block text-gray-700 font-medium mb-2"
+                data-testid="merchant-email-label"
+              >
+                Email
+              </label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+                data-testid="merchant-email-input"
               />
             </div>
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">Phone</label>
+            <div data-testid="merchant-phone-input-container">
+              <label
+                className="block text-gray-700 font-medium mb-2"
+                data-testid="merchant-phone-label"
+              >
+                Phone
+              </label>
               <input
                 type="text"
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+                data-testid="merchant-phone-input"
               />
             </div>
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">Status</label>
+            <div data-testid="merchant-status-input-container">
+              <label
+                className="block text-gray-700 font-medium mb-2"
+                data-testid="merchant-status-label"
+              >
+                Status
+              </label>
               <select
                 name="status"
                 value={formData.status}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+                data-testid="merchant-status-select"
               >
-                <option value="ACTIVE">Active</option>
-                <option value="INACTIVE">Inactive</option>
+                <option value="ACTIVE" data-testid="status-option-active">
+                  Active
+                </option>
+                <option value="INACTIVE" data-testid="status-option-inactive">
+                  Inactive
+                </option>
               </select>
             </div>
-            <div className="md:col-span-2">
-              <label className="block text-gray-700 font-medium mb-2">Address</label>
+            <div
+              className="md:col-span-2"
+              data-testid="merchant-address-input-container"
+            >
+              <label
+                className="block text-gray-700 font-medium mb-2"
+                data-testid="merchant-address-label"
+              >
+                Address
+              </label>
               <input
                 type="text"
                 name="address"
                 value={formData.address}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+                data-testid="merchant-address-input"
               />
             </div>
-            <div className="md:col-span-2">
-              <label className="block text-gray-700 font-medium mb-2">Description</label>
+            <div
+              className="md:col-span-2"
+              data-testid="merchant-description-input-container"
+            >
+              <label
+                className="block text-gray-700 font-medium mb-2"
+                data-testid="merchant-description-label"
+              >
+                Description
+              </label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300 h-32"
+                data-testid="merchant-description-textarea"
               ></textarea>
             </div>
-            <div className="md:col-span-2">
-              <button 
+            <div
+              className="md:col-span-2"
+              data-testid="merchant-form-actions-container"
+            >
+              <button
                 type="submit"
                 className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition"
+                data-testid="save-changes-button"
               >
                 Save Changes
               </button>
@@ -255,28 +335,82 @@ const handleInputChange = (
           </form>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold mb-4">Merchant Products</h2>
+        <div
+          className="bg-white rounded-lg shadow-md p-6"
+          data-testid="merchant-products-container"
+        >
+          <h2
+            className="text-xl font-bold mb-4"
+            data-testid="merchant-products-title"
+          >
+            Merchant Products
+          </h2>
           {merchant.products.length > 0 ? (
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-3 text-left">Title</th>
-                  <th className="py-3 text-left">Price</th>
-                  <th className="py-3 text-left">In Stock</th>
-                  <th className="py-3 text-left">Actions</th>
+            <table className="w-full" data-testid="merchant-products-table">
+              <thead data-testid="merchant-products-table-header">
+                <tr
+                  className="border-b"
+                  data-testid="merchant-products-table-header-row"
+                >
+                  <th
+                    className="py-3 text-left"
+                    data-testid="product-title-header"
+                  >
+                    Title
+                  </th>
+                  <th
+                    className="py-3 text-left"
+                    data-testid="product-price-header"
+                  >
+                    Price
+                  </th>
+                  <th
+                    className="py-3 text-left"
+                    data-testid="product-stock-header"
+                  >
+                    In Stock
+                  </th>
+                  <th
+                    className="py-3 text-left"
+                    data-testid="product-actions-header"
+                  >
+                    Actions
+                  </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody data-testid="merchant-products-table-body">
                 {merchant.products.map((product) => (
-                  <tr key={product.id} className="border-b hover:bg-gray-50">
-                    <td className="py-4">{product.title}</td>
-                    <td className="py-4">${product.price / 100}</td>
-                    <td className="py-4">{product.inStock}</td>
-                    <td className="py-4">
+                  <tr
+                    key={product.id}
+                    className="border-b hover:bg-gray-50"
+                    data-testid={`product-row-${product.id}`}
+                  >
+                    <td
+                      className="py-4"
+                      data-testid={`product-title-${product.id}`}
+                    >
+                      {product.title}
+                    </td>
+                    <td
+                      className="py-4"
+                      data-testid={`product-price-${product.id}`}
+                    >
+                      ${product.price / 100}
+                    </td>
+                    <td
+                      className="py-4"
+                      data-testid={`product-stock-${product.id}`}
+                    >
+                      {product.inStock}
+                    </td>
+                    <td
+                      className="py-4"
+                      data-testid={`product-actions-${product.id}`}
+                    >
                       <Link
                         href={`/admin/products/${product.id}`}
                         className="text-blue-500 hover:underline"
+                        data-testid={`product-view-link-${product.id}`}
                       >
                         View
                       </Link>
@@ -286,7 +420,9 @@ const handleInputChange = (
               </tbody>
             </table>
           ) : (
-            <p className="text-gray-500">No products for this merchant yet.</p>
+            <p className="text-gray-500" data-testid="no-products-message">
+              No products for this merchant yet.
+            </p>
           )}
         </div>
       </div>

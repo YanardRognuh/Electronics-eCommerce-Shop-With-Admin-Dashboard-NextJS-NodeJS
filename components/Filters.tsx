@@ -16,10 +16,10 @@ import { useSortStore } from "@/app/_zustand/sortStore";
 import { usePaginationStore } from "@/app/_zustand/paginationStore";
 
 interface InputCategory {
-  inStock: { text: string, isChecked: boolean },
-  outOfStock: { text: string, isChecked: boolean },
-  priceFilter: { text: string, value: number },
-  ratingFilter: { text: string, value: number },
+  inStock: { text: string; isChecked: boolean };
+  outOfStock: { text: string; isChecked: boolean };
+  priceFilter: { text: string; value: number };
+  ratingFilter: { text: string; value: number };
 }
 
 const Filters = () => {
@@ -50,13 +50,20 @@ const Filters = () => {
   }, [inputCategory, sortBy, page]);
 
   return (
-    <div>
-      <h3 className="text-2xl mb-2">Filters</h3>
+    <div data-testid="filters-container">
+      <h3 className="text-2xl mb-2" data-testid="filters-title">
+        Filters
+      </h3>
       <div className="divider"></div>
-      <div className="flex flex-col gap-y-1">
-        <h3 className="text-xl mb-2">Availability</h3>
-        <div className="form-control">
-          <label className="cursor-pointer flex items-center">
+      <div className="flex flex-col gap-y-1" data-testid="availability-filters">
+        <h3 className="text-xl mb-2" data-testid="availability-title">
+          Availability
+        </h3>
+        <div className="form-control" data-testid="in-stock-filter-control">
+          <label
+            className="cursor-pointer flex items-center"
+            data-testid="in-stock-filter-label"
+          >
             <input
               type="checkbox"
               checked={inputCategory.inStock.isChecked}
@@ -70,13 +77,22 @@ const Filters = () => {
                 })
               }
               className="checkbox"
+              data-testid="in-stock-checkbox"
             />
-            <span className="label-text text-lg ml-2 text-black">In stock</span>
+            <span
+              className="label-text text-lg ml-2 text-black"
+              data-testid="in-stock-label"
+            >
+              In stock
+            </span>
           </label>
         </div>
 
-        <div className="form-control">
-          <label className="cursor-pointer flex items-center">
+        <div className="form-control" data-testid="out-of-stock-filter-control">
+          <label
+            className="cursor-pointer flex items-center"
+            data-testid="out-of-stock-filter-label"
+          >
             <input
               type="checkbox"
               checked={inputCategory.outOfStock.isChecked}
@@ -90,8 +106,12 @@ const Filters = () => {
                 })
               }
               className="checkbox"
+              data-testid="out-of-stock-checkbox"
             />
-            <span className="label-text text-lg ml-2 text-black">
+            <span
+              className="label-text text-lg ml-2 text-black"
+              data-testid="out-of-stock-label"
+            >
               Out of stock
             </span>
           </label>
@@ -99,9 +119,11 @@ const Filters = () => {
       </div>
 
       <div className="divider"></div>
-      <div className="flex flex-col gap-y-1">
-        <h3 className="text-xl mb-2">Price</h3>
-        <div>
+      <div className="flex flex-col gap-y-1" data-testid="price-filters">
+        <h3 className="text-xl mb-2" data-testid="price-title">
+          Price
+        </h3>
+        <div data-testid="price-range-container">
           <input
             type="range"
             min={0}
@@ -118,15 +140,18 @@ const Filters = () => {
                 },
               })
             }
+            data-testid="price-range-slider"
           />
-          <span>{`Max price: $${inputCategory.priceFilter.value}`}</span>
+          <span data-testid="price-range-value">{`Max price: $${inputCategory.priceFilter.value}`}</span>
         </div>
       </div>
 
       <div className="divider"></div>
 
-      <div>
-        <h3 className="text-xl mb-2">Minimum Rating:</h3>
+      <div data-testid="rating-filters">
+        <h3 className="text-xl mb-2" data-testid="rating-title">
+          Minimum Rating:
+        </h3>
         <input
           type="range"
           min={0}
@@ -140,8 +165,12 @@ const Filters = () => {
           }
           className="range range-info"
           step="1"
+          data-testid="rating-range-slider"
         />
-        <div className="w-full flex justify-between text-xs px-2">
+        <div
+          className="w-full flex justify-between text-xs px-2"
+          data-testid="rating-range-labels"
+        >
           <span>0</span>
           <span>1</span>
           <span>2</span>

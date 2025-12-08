@@ -10,7 +10,16 @@
     "lint": "next lint",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "cy:run:chrome": "cypress run --browser chrome",
+    "cy:run:firefox": "cypress run --browser firefox",
+    "cy:run:headed": "cypress run --headed",
+    "cy:test:auth": "cypress run --spec 'cypress/e2e/auth.cy.ts'",
+    "cy:test:cart": "cypress run --spec 'cypress/e2e/shopping-cart.cy.ts'",
+    "cy:test:search": "cypress run --spec 'cypress/e2e/product-search.cy.ts'",
+    "cy:test:admin": "cypress run --spec 'cypress/e2e/admin-dashboard.cy.ts'"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
@@ -46,6 +55,7 @@
     "@types/react-dom": "^18.3.7",
     "autoprefixer": "^10.0.1",
     "baseline-browser-mapping": "^2.9.4",
+    "cypress": "^15.7.1",
     "daisyui": "^4.7.2",
     "eslint": "^8",
     "eslint-config-next": "^15.5.3",

@@ -22,30 +22,43 @@ const improveCategoryText = (text: string): string => {
   }
 };
 
-const ShopPage = async ({ params, searchParams }: { params: Promise<{ slug?: string[] }>, searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+const ShopPage = async ({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug?: string[] }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) => {
   // Await both params and searchParams
   const awaitedParams = await params;
   const awaitedSearchParams = await searchParams;
-  
+
   return (
-    <div className="text-black bg-white">
+    <div className="text-black bg-white" data-testid="shop-page-container">
       <div className=" max-w-screen-2xl mx-auto px-10 max-sm:px-5">
-        <Breadcrumb />
+        <Breadcrumb data-testid="shop-breadcrumb" />
         <div className="grid grid-cols-[200px_1fr] gap-x-10 max-md:grid-cols-1 max-md:gap-y-5">
-          <Filters />
+          <Filters data-testid="shop-filters" />
           <div>
             <div className="flex justify-between items-center max-lg:flex-col max-lg:gap-y-5">
-              <h2 className="text-2xl font-bold max-sm:text-xl max-[400px]:text-lg uppercase">
+              <h2
+                className="text-2xl font-bold max-sm:text-xl max-[400px]:text-lg uppercase"
+                data-testid="shop-category-title"
+              >
                 {awaitedParams?.slug && awaitedParams?.slug[0]?.length > 0
                   ? sanitize(improveCategoryText(awaitedParams?.slug[0]))
                   : "All products"}
               </h2>
 
-              <SortBy />
+              <SortBy data-testid="shop-sort-by" />
             </div>
             <div className="divider"></div>
-            <Products params={awaitedParams} searchParams={awaitedSearchParams} />
-            <Pagination />
+            <Products
+              params={awaitedParams}
+              searchParams={awaitedSearchParams}
+              data-testid="shop-products-list"
+            />
+            <Pagination data-testid="shop-pagination" />
           </div>
         </div>
       </div>
