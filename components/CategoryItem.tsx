@@ -15,15 +15,26 @@ interface CategoryItemProps {
   children: ReactNode;
   title: string;
   href: string;
+  "data-testid"?: string; // Tambahkan prop untuk data-testid
 }
 
-const CategoryItem = ({ title, children, href }: CategoryItemProps) => {
+const CategoryItem = ({
+  title,
+  children,
+  href,
+  "data-testid": dataTestId,
+}: CategoryItemProps) => {
   return (
-    <Link href={href}>
-      <div className="flex flex-col items-center gap-y-2 cursor-pointer bg-white py-5 text-black hover:bg-gray-100">
+    <Link href={href} data-testid={dataTestId}>
+      <div
+        className="flex flex-col items-center gap-y-2 cursor-pointer bg-white py-5 text-black hover:bg-gray-100"
+        data-testid="category-item-content"
+      >
         {children}
 
-        <h3 className="font-semibold text-xl">{title}</h3>
+        <h3 className="font-semibold text-xl" data-testid="category-item-title">
+          {title}
+        </h3>
       </div>
     </Link>
   );

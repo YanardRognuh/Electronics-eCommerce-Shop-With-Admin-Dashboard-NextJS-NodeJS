@@ -22,8 +22,10 @@ const RangeWithLabels = () => {
   };
 
   return (
-    <div>
-      <span className="label-text text-lg text-black">Price filter:</span>
+    <div data-testid="range-with-labels-container">
+      <span className="label-text text-lg text-black" data-testid="range-label">
+        Price filter:
+      </span>
       <input
         type="range"
         min={0}
@@ -32,13 +34,17 @@ const RangeWithLabels = () => {
         onChange={(e) => handleRangeWLabelsValue(e)}
         className="range range-warning"
         step="200"
+        data-testid="range-with-labels-input"
       />
-      <div className="w-full flex justify-between text-xs px-2">
-        <span>$0</span>
-        <span>$200</span>
-        <span>$400</span>
-        <span>$600</span>
-        <span>$4000</span>
+      <div
+        className="w-full flex justify-between text-xs px-2"
+        data-testid="range-labels-container"
+      >
+        <span data-testid="range-label-0">$0</span>
+        <span data-testid="range-label-200">$200</span>
+        <span data-testid="range-label-400">$400</span>
+        <span data-testid="range-label-600">$600</span>
+        <span data-testid="range-label-4000">$4000</span>
       </div>
     </div>
   );

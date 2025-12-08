@@ -1,37 +1,61 @@
+// Custom Commands untuk Singitronic E-commerce
+
 /// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      /**
+       * Login sebagai user
+       * @example cy.login('user@example.com', 'password')
+       */
+      login(email: string, password: string): Chainable<void>;
+
+      /**
+       * Login sebagai admin
+       * @example cy.loginAsAdmin()
+       */
+      loginAsAdmin(): Chainable<void>;
+
+      /**
+       * Logout dari aplikasi
+       * @example cy.logout()
+       */
+      logout(): Chainable<void>;
+    }
+  }
+}
+
+// Command untuk login user
+Cypress.Commands.add("login", (email: string, password: string) => {
+  cy.session([email, password], () => {
+    cy.visit("/login");
+
+    // Isi form login menggunakan data-testid yang sudah ada
+    cy.get('[data-testid="login-email-input"]').type(email);
+    cy.get('[data-testid="login-password-input"]').type(password);
+    cy.get('[data-testid="login-submit-button"]').click();
+
+    // Tunggu sampai redirect selesai
+    cy.url().should("not.include", "/login");
+  });
+});
+
+// Command untuk login sebagai admin
+Cypress.Commands.add("loginAsAdmin", () => {
+  cy.login("admin@example.com", "password");
+});
+
+// Command untuk logout
+Cypress.Commands.add("logout", () => {
+  // Klik user profile trigger di admin header
+  cy.get('[data-testid="admin-user-profile-trigger"]').click();
+
+  // Klik logout link
+  cy.get('[data-testid="admin-logout-link"]').click();
+
+  // Verifikasi sudah logout (redirect ke login atau home)
+  cy.url().should("match", /\/(login)?$/);
+});
+
+export {};

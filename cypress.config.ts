@@ -1,33 +1,51 @@
+// cypress.config.ts
 import { defineConfig } from "cypress";
 
 export default defineConfig({
-  projectId: "ft1qnc",
+  projectId: "ft1qnc", // opsional, hanya jika pakai Cypress Cloud
+
   e2e: {
-    // URL dasar aplikasi Anda
     baseUrl: "http://localhost:3000",
+    specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
+    supportFile: "cypress/support/e2e.{js,ts}",
 
-    // Timeout settings
-    defaultCommandTimeout: 10000,
-    pageLoadTimeout: 30000,
+    // Timeout yang realistis untuk lingkungan dev lokal
+    defaultCommandTimeout: 10000, // 10 detik
+    pageLoadTimeout: 60000, // 60 detik (Next.js dev bisa lambat saat cold start)
+    requestTimeout: 10000,
+    responseTimeout: 30000,
 
-    // Viewport default
+    // Viewport untuk desktop (default) — tambahkan test mobile terpisah jika perlu
     viewportWidth: 1280,
     viewportHeight: 720,
 
-    // Setup untuk test
-    setupNodeEvents(on, config) {
-      // implementasi event listeners di sini
-    },
+    // Rekam video hanya saat diperlukan (nonaktifkan di dev lokal untuk hemat waktu)
+    video: false,
 
-    // Untuk screenshot otomatis saat test gagal
+    // Ambil screenshot saat test gagal
     screenshotOnRunFailure: true,
 
-    // Pattern file test
-    specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
+    setupNodeEvents(on, config) {
+      // Tambahkan event jika perlu (misal: log, custom task)
+      // Contoh: on('task', { ... })
+      return config;
+    },
   },
 
-  // Environment variables
+  // Variabel lingkungan untuk akses backend & data test
   env: {
-    apiUrl: "http://localhost:3001", // URL backend Anda
+    apiUrl: "http://localhost:3001",
+    EMAIL_USER: "user@example.com",
+    PASSWORD_USER: "password",
+    EMAIL_ADMIN: "admin@example.com",
+    PASSWORD_ADMIN: "password",
+  },
+
+  // Opsional: konfigurasi komponen jika Anda ingin tambahkan Component Testing
+  component: {
+    devServer: {
+      framework: "next",
+      bundler: "webpack",
+    },
   },
 });
