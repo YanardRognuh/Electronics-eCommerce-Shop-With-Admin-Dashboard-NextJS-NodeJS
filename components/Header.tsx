@@ -135,7 +135,7 @@ const Header = () => {
             className="flex gap-x-5 items-center"
             data-testid="admin-header-icons-container"
           >
-            <NotificationBell data-testid="admin-notification-bell-component" />
+            <NotificationBell />
             <div
               className="dropdown dropdown-end"
               data-testid="admin-user-dropdown"

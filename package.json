@@ -5,6 +5,9 @@
   "scripts": {
     "setup": "node scripts/setup-env.js",
     "dev": "prisma generate && next dev",
+    "server": "cd server && node app.js",
+    "server:test": "cross-env NODE_ENV=test CYPRESS_TEST=true node server/app.js",
+    "test:all": "concurrently \"npm run server:test\" \"npm run dev\" \"npm run test:e2e\"",
     "build": "prisma generate && next build --no-lint",
     "start": "next start",
     "lint": "next lint",
@@ -73,6 +76,7 @@
     "@types/react-dom": "^18.3.7",
     "autoprefixer": "^10.0.1",
     "baseline-browser-mapping": "^2.9.4",
+    "cross-env": "^10.1.0",
     "cypress": "^15.7.1",
     "daisyui": "^4.7.2",
     "eslint": "^8",

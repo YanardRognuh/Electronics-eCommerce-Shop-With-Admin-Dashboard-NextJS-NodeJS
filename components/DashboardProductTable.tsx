@@ -86,7 +86,7 @@ const DashboardProductTable = () => {
             {/* row 1 */}
             {products && products.length > 0 ? (
               products.map((product) => (
-                <tr key={nanoid()} data-testid={`product-row-${product.id}`}>
+                <tr key={product.id} data-testid={`product-row-${product.id}`}>
                   <th data-testid={`product-select-cell-${product.id}`}>
                     <label data-testid={`product-select-label-${product.id}`}>
                       <input

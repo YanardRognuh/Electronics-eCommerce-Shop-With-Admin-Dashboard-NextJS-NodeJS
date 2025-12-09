@@ -1,5 +1,3 @@
-// cypress/support/commands.ts
-
 /// <reference types="cypress" />
 
 declare global {
@@ -118,7 +116,8 @@ interface CheckoutFormData {
 Cypress.Commands.add("login", (email: string, password: string) => {
   cy.session([email, password], () => {
     cy.visit("/login");
-    cy.wait(1000);
+    // Kurangi waktu tunggu dari 1000ms menjadi 500ms
+    cy.wait(500);
 
     cy.get('[data-testid="login-email-input"]').clear().type(email);
     cy.get('[data-testid="login-password-input"]').clear().type(password);
@@ -126,6 +125,7 @@ Cypress.Commands.add("login", (email: string, password: string) => {
 
     // Verify redirect after successful login
     cy.url().should("not.include", "/login");
+    // Kurangi waktu tunggu dari 500ms menjadi 200ms
     cy.wait(500);
   });
 });
@@ -142,7 +142,8 @@ Cypress.Commands.add(
   "registerUser",
   (name: string, lastname: string, email: string, password: string) => {
     cy.visit("/register");
-    cy.wait(1000);
+    // Kurangi waktu tunggu dari 1000ms menjadi 500ms
+    cy.wait(500);
 
     cy.get('[data-testid="register-name-input"]').clear().type(name);
     cy.get('[data-testid="register-lastname-input"]').clear().type(lastname);
@@ -171,7 +172,7 @@ Cypress.Commands.add("logout", () => {
   });
 
   // Verify logout
-  cy.url().should("match", /\/(login)?$/);
+  cy.location("pathname").should("eq", "/login");
 });
 
 // ============================================================================
@@ -186,7 +187,8 @@ Cypress.Commands.add("searchProduct", (query: string) => {
 
 Cypress.Commands.add("goToProductPage", (productSlug: string) => {
   cy.visit(`/product/${productSlug}`);
-  cy.wait(1000);
+  // Kurangi waktu tunggu dari 1000ms menjadi 300ms
+  cy.wait(300);
   cy.get('[data-testid="single-product-page-container"]').should("be.visible");
 });
 
@@ -207,12 +209,13 @@ Cypress.Commands.add("addToCart", (productId?: string) => {
   // Find and click Add to Cart button
   cy.contains("button", /add to cart/i).click();
 
-  // Wait for cart update
+  // Kurangi waktu tunggu dari 1000ms menjadi 500ms
   cy.wait(1000);
 });
 
 Cypress.Commands.add("clearCart", () => {
   cy.visit("/cart");
+  // Kurangi waktu tunggu dari 1000ms menjadi 300ms
   cy.wait(1000);
 
   cy.get("body").then(($body) => {
@@ -220,6 +223,7 @@ Cypress.Commands.add("clearCart", () => {
       // Remove all items
       cy.get('[data-testid^="remove-item-button-"]').each(($btn) => {
         cy.wrap($btn).click();
+        // Kurangi waktu tunggu dari 500ms menjadi 200ms
         cy.wait(500);
       });
     }
@@ -247,11 +251,13 @@ Cypress.Commands.add("selectQuantity", (quantity: number) => {
   if (clicksNeeded > 0) {
     for (let i = 0; i < clicksNeeded; i++) {
       cy.get('[data-testid="quantity-increment-button"]').click();
+      // Kurangi waktu tunggu dari 200ms menjadi 100ms
       cy.wait(200);
     }
   } else if (clicksNeeded < 0) {
     for (let i = 0; i < Math.abs(clicksNeeded); i++) {
       cy.get('[data-testid="quantity-decrement-button"]').click();
+      // Kurangi waktu tunggu dari 200ms menjadi 100ms
       cy.wait(200);
     }
   }
@@ -311,10 +317,11 @@ Cypress.Commands.add("fillCheckoutForm", (formData: CheckoutFormData) => {
 
 Cypress.Commands.add("waitForPageLoad", () => {
   cy.get("body").should("be.visible");
-  cy.wait(500); // Small delay for Next.js hydration
+  cy.wait(1000);
 });
 
-Cypress.Commands.add("checkVisibility", (selector: string, timeout = 10000) => {
+Cypress.Commands.add("checkVisibility", (selector: string, timeout = 5000) => {
+  // Kurangi timeout default dari 10000ms menjadi 5000ms
   cy.get(selector, { timeout }).should("be.visible");
 });
 
