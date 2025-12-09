@@ -83,10 +83,7 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
               inStock={product?.inStock}
               data-testid="product-stock-availability"
             />
-            <SingleProductDynamicFields
-              product={product}
-              data-testid="product-dynamic-fields"
-            />
+            <SingleProductDynamicFields product={product} />
             <div className="flex flex-col gap-y-2 max-[500px]:items-center">
               <p className="text-lg" data-testid="product-sku">
                 SKU: <span className="ml-1">abccd-18</span>

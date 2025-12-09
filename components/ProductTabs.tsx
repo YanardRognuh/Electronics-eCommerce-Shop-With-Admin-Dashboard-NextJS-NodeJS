@@ -16,11 +16,19 @@ import React, { useState } from "react";
 import { formatCategoryName } from "@/utils/categoryFormating";
 import { sanitize, sanitizeHtml } from "@/lib/sanitize";
 
-const ProductTabs = ({ product }: { product: Product }) => {
+interface ProductTabsProps {
+  "data-testid"?: string;
+  product: Product;
+}
+
+const ProductTabs = ({
+  "data-testid": dataTestId,
+  product,
+}: ProductTabsProps) => {
   const [currentProductTab, setCurrentProductTab] = useState<number>(0);
 
   return (
-    <div className="px-5 text-black" data-testid="product-tabs-container">
+    <div className="px-5 text-black" data-testid={dataTestId}>
       <div
         role="tablist"
         className="tabs tabs-bordered"

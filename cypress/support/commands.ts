@@ -126,7 +126,7 @@ Cypress.Commands.add("login", (email: string, password: string) => {
 
     // Verify redirect after successful login
     cy.url().should("not.include", "/login");
-    cy.wait(1000);
+    cy.wait(500);
   });
 });
 
@@ -267,9 +267,6 @@ Cypress.Commands.add("selectQuantity", (quantity: number) => {
 // ============================================================================
 
 Cypress.Commands.add("fillCheckoutForm", (formData: CheckoutFormData) => {
-  cy.visit("/checkout");
-  cy.wait(1000);
-
   cy.get('[data-testid="checkout-name-input"]').clear().type(formData.name);
   cy.get('[data-testid="checkout-lastname-input"]')
     .clear()

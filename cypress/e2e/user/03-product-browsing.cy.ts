@@ -1,6 +1,10 @@
 // cypress/e2e/user/03-product-browsing.cy.ts
 
 describe("Product Browsing & Search", () => {
+  before(() => {
+    cy.loginAsUser();
+  });
+
   describe("Shop Page", () => {
     beforeEach(() => {
       cy.visit("/shop");

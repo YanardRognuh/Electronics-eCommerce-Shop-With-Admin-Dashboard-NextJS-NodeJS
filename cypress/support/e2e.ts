@@ -21,8 +21,15 @@ Cypress.on("uncaught:exception", (err, runnable) => {
   return true;
 });
 
-// Before each test, clear cookies and local storage
+// Hanya clear session untuk test authentication
+// Test lain akan tetap maintain session
 beforeEach(() => {
-  cy.clearCookies();
-  cy.clearLocalStorage();
+  // Ambil nama file test yang sedang berjalan
+  const testFile = Cypress.spec.name;
+
+  // Hanya clear jika test authentication
+  if (testFile.includes("authentication")) {
+    cy.clearCookies();
+    cy.clearLocalStorage();
+  }
 });

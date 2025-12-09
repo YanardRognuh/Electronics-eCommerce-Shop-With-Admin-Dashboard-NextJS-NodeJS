@@ -8,11 +8,13 @@ export default defineConfig({
     baseUrl: "http://localhost:3000",
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     supportFile: "cypress/support/e2e.{js,ts}",
+    experimentalRunAllSpecs: true,
+    testIsolation: true,
 
     // Timeout yang realistis untuk lingkungan dev lokal
-    defaultCommandTimeout: 10000, // 10 detik
+    defaultCommandTimeout: 5000, // 10 detik
     pageLoadTimeout: 60000, // 60 detik (Next.js dev bisa lambat saat cold start)
-    requestTimeout: 10000,
+    requestTimeout: 5000,
     responseTimeout: 30000,
 
     // Viewport untuk desktop (default) — tambahkan test mobile terpisah jika perlu
