@@ -56,7 +56,7 @@ const ShopPage = async ({
             <Products
               params={awaitedParams}
               searchParams={awaitedSearchParams}
-              data-testid="shop-products-list"
+              data-testid="products-grid"
             />
             <Pagination data-testid="shop-pagination" />
           </div>

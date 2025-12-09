@@ -1,19 +1,14 @@
-// *********************
-// Role of the component: Search input element located in the header but it can be used anywhere in your application
-// Name of the component: SearchInput.tsx
-// Developer: Aleksandar Kuzmanovic
-// Version: 1.0
-// Component call: <SearchInput />
-// Input parameters: no input parameters
-// Output: form with search input and button
-// *********************
-
+// SearchInput.tsx
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { sanitize } from "@/lib/sanitize";
 
-const SearchInput = () => {
+interface SearchInputProps {
+  "data-testid"?: string;
+}
+
+const SearchInput: React.FC<SearchInputProps> = ({ "data-testid": testId }) => {
   const [searchInput, setSearchInput] = useState<string>("");
   const router = useRouter();
 
@@ -30,7 +25,7 @@ const SearchInput = () => {
     <form
       className="flex w-full justify-center"
       onSubmit={searchProducts}
-      data-testid="search-form"
+      data-testid={testId || "search-form"} // Gunakan testId dari props jika tersedia
     >
       <input
         type="text"

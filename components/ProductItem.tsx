@@ -1,30 +1,25 @@
-// *********************
-// Role of the component: Product item component
-// Name of the component: ProductItem.tsx
-// Developer: Aleksandar Kuzmanovic
-// Version: 1.0
-// Component call: <ProductItem product={product} color={color} />
-// Input parameters: { product: Product; color: string; }
-// Output: Product item component that contains product image, title, link to the single product page, price, button...
-// *********************
-
+// ProductItem.tsx
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
 
 import { sanitize } from "@/lib/sanitize";
 
+interface ProductItemProps {
+  product: Product;
+  color: string;
+  "data-testid"?: string;
+}
+
 const ProductItem = ({
   product,
   color,
-}: {
-  product: Product;
-  color: string;
-}) => {
+  "data-testid": testId,
+}: ProductItemProps) => {
   return (
     <div
       className="flex flex-col items-center gap-y-2"
-      data-testid={`product-item-${product.id}`}
+      data-testid={testId || `product-item-${product.id}`}
     >
       <Link
         href={`/product/${product.slug}`}

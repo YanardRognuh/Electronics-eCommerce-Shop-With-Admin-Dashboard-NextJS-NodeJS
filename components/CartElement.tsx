@@ -24,9 +24,15 @@ const CartElement = ({
   const { allQuantity } = useProductStore();
   return (
     <div className="relative" data-testid={dataTestId}>
-      <Link href="/cart">
-        <FaCartShopping className="text-2xl text-black" />
-        <span className="block w-6 h-6 bg-blue-600 text-white rounded-full flex justify-center items-center absolute top-[-17px] right-[-22px]">
+      <Link href="/cart" data-testid="cart-link">
+        <FaCartShopping
+          className="text-2xl text-black"
+          data-testid="cart-icon"
+        />
+        <span
+          className="block w-6 h-6 bg-blue-600 text-white rounded-full flex justify-center items-center absolute top-[-17px] right-[-22px]"
+          data-testid="cart-quantity-badge"
+        >
           {allQuantity}
         </span>
       </Link>

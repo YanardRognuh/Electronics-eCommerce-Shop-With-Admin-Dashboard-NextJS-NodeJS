@@ -14,13 +14,21 @@ import Link from "next/link";
 import React from "react";
 import { FaHeart } from "react-icons/fa6";
 
-const HeartElement = ({wishQuantity}: {wishQuantity: number}) => {
+interface HeartElementProps {
+  wishQuantity: number;
+  "data-testid"?: string;
+}
+
+const HeartElement: React.FC<HeartElementProps> = ({
+  wishQuantity,
+  "data-testid": dataTestId,
+}) => {
   return (
-    <div className="relative">
+    <div className="relative" data-testid={dataTestId}>
       <Link href="/wishlist">
         <FaHeart className="text-2xl text-black" />
         <span className="block w-6 h-6 font-bold bg-blue-600 text-white rounded-full flex justify-center items-center absolute top-[-17px] right-[-22px]">
-          { wishQuantity }
+          {wishQuantity}
         </span>
       </Link>
     </div>

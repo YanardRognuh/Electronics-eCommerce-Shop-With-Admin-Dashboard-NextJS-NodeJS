@@ -12,14 +12,18 @@
 import React from "react";
 import { useSortStore } from "@/app/_zustand/sortStore";
 
-const SortBy = () => {
+interface SortByProps {
+  "data-testid"?: string;
+}
+
+const SortBy: React.FC<SortByProps> = ({ "data-testid": testId }) => {
   // getting values from Zustand sort store
   const { sortBy, changeSortBy } = useSortStore();
 
   return (
     <div
       className="flex items-center gap-x-5 max-lg:flex-col max-lg:w-full max-lg:items-start"
-      data-testid="sort-by-container"
+      data-testid={testId}
     >
       <h3 className="text-xl" data-testid="sort-by-label">
         Sort by:

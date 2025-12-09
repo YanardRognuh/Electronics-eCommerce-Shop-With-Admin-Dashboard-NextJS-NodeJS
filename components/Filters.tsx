@@ -1,13 +1,4 @@
-// *********************
-// Role of the component: Filters on shop page
-// Name of the component: Filters.tsx
-// Developer: Aleksandar Kuzmanovic
-// Version: 1.0
-// Component call: <Filters />
-// Input parameters: no input parameters
-// Output: stock, rating and price filter
-// *********************
-
+// Filters.tsx
 "use client";
 import React, { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -22,7 +13,11 @@ interface InputCategory {
   ratingFilter: { text: string; value: number };
 }
 
-const Filters = () => {
+interface FiltersProps {
+  "data-testid"?: string;
+}
+
+const Filters = ({ "data-testid": testId }: FiltersProps) => {
   const pathname = usePathname();
   const { replace } = useRouter();
 
@@ -50,7 +45,7 @@ const Filters = () => {
   }, [inputCategory, sortBy, page]);
 
   return (
-    <div data-testid="filters-container">
+    <div data-testid={testId}>
       <h3 className="text-2xl mb-2" data-testid="filters-title">
         Filters
       </h3>
