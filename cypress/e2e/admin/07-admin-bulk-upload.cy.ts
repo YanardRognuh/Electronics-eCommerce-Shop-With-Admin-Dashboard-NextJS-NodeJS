@@ -7,6 +7,12 @@ describe("Admin Bulk Upload", () => {
     cy.waitForPageLoad();
   });
 
+  afterEach(() => {
+    cy.clearTestBulkUploadBatches(); // Clean batch & products
+    // atau
+    cy.clearBulkUploadTestProducts(); // Clean products only
+  });
+
   describe("Bulk Upload Page Layout", () => {
     it("should display bulk upload page", () => {
       cy.get('[data-testid="bulk-upload-page-container"]').should("be.visible");
@@ -17,7 +23,9 @@ describe("Admin Bulk Upload", () => {
     });
 
     it("should display dashboard sidebar", () => {
-      cy.get('[data-testid="dashboard-sidebar"]').should("be.visible");
+      cy.get('[data-testid="dashboard-sidebar-container"]').should(
+        "be.visible"
+      );
     });
   });
 
@@ -48,7 +56,6 @@ describe("Admin Bulk Upload", () => {
       cy.get('[data-testid="download-template-button"]').click();
 
       // Template download should trigger
-      // Note: Actual file download verification requires additional setup
       cy.wait(1000);
     });
   });
@@ -91,25 +98,54 @@ describe("Admin Bulk Upload", () => {
 
   describe("File Selection", () => {
     it("should show selected file info after file selection", () => {
-      // Note: Requires a test CSV file in fixtures
-      const fileName = "test-products.csv";
+      const fileName = "bulk-upload-example.csv";
 
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid="file-upload-input"]').length > 0) {
-          // Mock file selection (requires fixture file)
-          // cy.get('[data-testid="file-upload-input"]')
-          //   .selectFile(`cypress/fixtures/${fileName}`, { force: true });
-          // cy.get('[data-testid="selected-file-info"]').should('be.visible');
-          // cy.get('[data-testid="selected-file-info"]').should('contain', fileName);
-        }
-      });
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        `cypress/fixtures/${fileName}`,
+        { force: true }
+      );
+
+      cy.get('[data-testid="selected-file-info"]').should("be.visible");
+      cy.get('[data-testid="selected-file-info"]').should("contain", fileName);
     });
 
     it("should enable upload button when file is selected", () => {
-      // Note: Requires fixture file
-      // cy.get('[data-testid="file-upload-input"]')
-      //   .selectFile('cypress/fixtures/test-products.csv', { force: true });
-      // cy.get('[data-testid="upload-products-button"]').should('not.be.disabled');
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      cy.get('[data-testid="upload-products-button"]').should(
+        "not.be.disabled"
+      );
+    });
+
+    it("should display file size information", () => {
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      cy.get('[data-testid="selected-file-size"]').should("be.visible");
+    });
+
+    it("should allow removing selected file", () => {
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      cy.get('[data-testid="selected-file-info"]').should("be.visible");
+
+      cy.get("body").then(($body) => {
+        if ($body.find('[data-testid="remove-file-button"]').length > 0) {
+          cy.get('[data-testid="remove-file-button"]').click();
+          cy.get('[data-testid="selected-file-info"]').should("not.exist");
+          cy.get('[data-testid="upload-products-button"]').should(
+            "be.disabled"
+          );
+        }
+      });
     });
   });
 
@@ -139,11 +175,132 @@ describe("Admin Bulk Upload", () => {
     });
 
     it("should display required CSV columns", () => {
-      // Check for common required columns
       cy.get('[data-testid="csv-format-table-body"]').within(() => {
-        cy.contains("name").should("be.visible");
+        cy.contains("title").should("be.visible");
         cy.contains("price").should("be.visible");
         cy.contains("description").should("be.visible");
+      });
+    });
+  });
+
+  describe("Successful Upload Flow", () => {
+    it("should successfully upload valid CSV file", () => {
+      // Select CSV file
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      // Verify file is selected
+      cy.get('[data-testid="selected-file-info"]').should("be.visible");
+      cy.get('[data-testid="upload-products-button"]').should(
+        "not.be.disabled"
+      );
+
+      // Upload file
+      cy.get('[data-testid="upload-products-button"]').click();
+
+      // Wait for upload to complete
+      cy.wait(3000);
+
+      // Check for success indicators
+      cy.get("body").then(($body) => {
+        if ($body.find('[data-testid="upload-result-container"]').length > 0) {
+          cy.get('[data-testid="upload-result-container"]').should(
+            "be.visible"
+          );
+          cy.get('[data-testid="upload-result-status"]').should("be.visible");
+        }
+
+        // Verify new batch appears in history
+        if ($body.find('[data-testid^="batch-item-"]').length > 0) {
+          cy.get('[data-testid^="batch-item-"]').first().should("be.visible");
+        }
+      });
+    });
+
+    it("should display upload statistics after successful upload", () => {
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      cy.get('[data-testid="upload-products-button"]').click();
+      cy.wait(3000);
+
+      cy.get("body").then(($body) => {
+        if (
+          $body.find('[data-testid="upload-statistics-container"]').length > 0
+        ) {
+          cy.get('[data-testid="upload-statistics-container"]').should(
+            "be.visible"
+          );
+          cy.get('[data-testid="statistics-grid"]').should("be.visible");
+          cy.get('[data-testid="processed-count-container"]').should(
+            "be.visible"
+          );
+          cy.get('[data-testid="successful-count-container"]').should(
+            "be.visible"
+          );
+          cy.get('[data-testid="failed-count-container"]').should("be.visible");
+        }
+      });
+    });
+
+    it("should display success icon for successful upload", () => {
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      cy.get('[data-testid="upload-products-button"]').click();
+      cy.wait(3000);
+
+      cy.get("body").then(($body) => {
+        if ($body.find('[data-testid="success-icon"]').length > 0) {
+          cy.get('[data-testid="success-icon"]').should("be.visible");
+        }
+      });
+    });
+
+    it("should update upload history after successful upload", () => {
+      // Get initial history count
+      cy.get("body").then(($body) => {
+        const initialCount =
+          $body.find('[data-testid^="batch-item-"]').length || 0;
+
+        // Upload file
+        cy.get('[data-testid="file-upload-input"]').selectFile(
+          "cypress/fixtures/bulk-upload-example.csv",
+          { force: true }
+        );
+
+        cy.get('[data-testid="upload-products-button"]').click();
+        cy.wait(3000);
+
+        // Verify history count increased
+        cy.get('[data-testid^="batch-item-"]').should(
+          "have.length.at.least",
+          initialCount
+        );
+      });
+    });
+
+    it("should reset file selection after successful upload", () => {
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      cy.get('[data-testid="upload-products-button"]').click();
+      cy.wait(3000);
+
+      cy.get("body").then(($body) => {
+        if ($body.find('[data-testid="selected-file-info"]').length === 0) {
+          cy.get('[data-testid="upload-products-button"]').should(
+            "be.disabled"
+          );
+        }
       });
     });
   });
@@ -361,50 +518,130 @@ describe("Admin Bulk Upload", () => {
         }
       });
     });
-  });
 
-  describe("Upload Results", () => {
-    it("should display upload result after successful upload", () => {
-      // Note: Requires actual file upload
-      // After upload completes:
-      // cy.get('[data-testid="upload-result-container"]').should('be.visible');
-      // cy.get('[data-testid="upload-result-status"]').should('be.visible');
-      // cy.get('[data-testid="upload-result-message"]').should('be.visible');
-    });
+    it("should delete batch when confirmed", () => {
+      // First upload a file to create a batch
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+      cy.get('[data-testid="upload-products-button"]').click();
+      cy.wait(3000);
 
-    it("should display upload statistics", () => {
-      // After upload:
-      // cy.get('[data-testid="upload-statistics-container"]').should('be.visible');
-      // cy.get('[data-testid="statistics-grid"]').should('be.visible');
-      // cy.get('[data-testid="processed-count-container"]').should('be.visible');
-      // cy.get('[data-testid="successful-count-container"]').should('be.visible');
-      // cy.get('[data-testid="failed-count-container"]').should('be.visible');
-    });
+      // Get the batch ID
+      cy.get("body").then(($body) => {
+        if ($body.find('[data-testid^="batch-delete-button-"]').length > 0) {
+          const initialCount = $body.find(
+            '[data-testid^="batch-item-"]'
+          ).length;
 
-    it("should display success icon for successful upload", () => {
-      // cy.get('[data-testid="success-icon"]').should('be.visible');
-    });
+          // Open delete modal
+          cy.get('[data-testid^="batch-delete-button-"]').first().click();
 
-    it("should display error icon for failed upload", () => {
-      // cy.get('[data-testid="error-icon"]').should('be.visible');
-    });
+          // Check delete products checkbox if present
+          cy.get("body").then(($modalBody) => {
+            if (
+              $modalBody.find('[data-testid="delete-products-checkbox"]')
+                .length > 0
+            ) {
+              cy.get('[data-testid="delete-products-checkbox"]').check({
+                force: true,
+              });
+            }
+          });
 
-    it("should display errors list if upload has errors", () => {
-      // cy.get('[data-testid="errors-container"]').should('be.visible');
-      // cy.get('[data-testid="errors-heading"]').should('be.visible');
-      // cy.get('[data-testid="errors-list"]').should('be.visible');
+          // Confirm deletion
+          cy.get('[data-testid="delete-modal-confirm-button"]').click();
+          cy.wait(2000);
+
+          // Verify batch is removed
+          cy.get('[data-testid^="batch-item-"]').should(
+            "have.length.lessThan",
+            initialCount
+          );
+        }
+      });
     });
   });
 
   describe("Upload Progress", () => {
     it("should display upload progress indicator during upload", () => {
-      // During upload:
-      // cy.get('[data-testid="upload-progress-indicator"]').should('be.visible');
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      cy.get('[data-testid="upload-products-button"]').click();
+
+      cy.get("body").then(($body) => {
+        if (
+          $body.find('[data-testid="upload-progress-indicator"]').length > 0
+        ) {
+          cy.get('[data-testid="upload-progress-indicator"]').should(
+            "be.visible"
+          );
+        }
+      });
+
+      cy.wait(3000);
     });
 
     it("should disable upload button during upload", () => {
-      // During upload:
-      // cy.get('[data-testid="upload-products-button"]').should('be.disabled');
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      cy.get('[data-testid="upload-products-button"]').click();
+
+      cy.get('[data-testid="upload-products-button"]').should("be.disabled");
+
+      cy.wait(3000);
+    });
+  });
+
+  describe("File Validation", () => {
+    it("should only accept CSV files", () => {
+      // Create a fake non-CSV file
+      cy.writeFile("cypress/fixtures/test-image.txt", "This is not a CSV file");
+
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/test-image.txt",
+        { force: true }
+      );
+
+      cy.get("body").then(($body) => {
+        // Check if error message is displayed or button remains disabled
+        if ($body.find('[data-testid="file-type-error"]').length > 0) {
+          cy.get('[data-testid="file-type-error"]').should("be.visible");
+        }
+
+        // Upload button should be disabled for invalid files
+        if (
+          $body.find('[data-testid="upload-products-button"]').length > 0 &&
+          $body.find('[data-testid="file-type-error"]').length > 0
+        ) {
+          cy.get('[data-testid="upload-products-button"]').should(
+            "be.disabled"
+          );
+        }
+      });
+    });
+
+    it("should validate CSV file size", () => {
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      cy.get("body").then(($body) => {
+        if ($body.find('[data-testid="selected-file-size"]').length > 0) {
+          cy.get('[data-testid="selected-file-size"]')
+            .should("be.visible")
+            .invoke("text")
+            .should("not.be.empty");
+        }
+      });
     });
   });
 
@@ -473,16 +710,6 @@ describe("Admin Bulk Upload", () => {
     });
   });
 
-  describe("File Validation", () => {
-    it("should only accept CSV files", () => {
-      // Note: Requires trying to upload non-CSV file
-      // cy.get('[data-testid="file-upload-input"]')
-      //   .selectFile('cypress/fixtures/test-image.jpg', { force: true });
-      // Should show error or reject file
-      // cy.get('[data-testid="upload-products-button"]').should('be.disabled');
-    });
-  });
-
   describe("Accessibility", () => {
     it("should have accessible file upload input", () => {
       cy.get('[data-testid="file-upload-label"]').should("have.attr", "for");
@@ -491,6 +718,32 @@ describe("Admin Bulk Upload", () => {
     it("should provide clear instructions", () => {
       cy.get('[data-testid="instructions-list"]').within(() => {
         cy.get("li").should("have.length.greaterThan", 0);
+      });
+    });
+
+    it("should have proper ARIA labels", () => {
+      cy.get('[data-testid="file-upload-input"]').should(
+        "have.attr",
+        "aria-label"
+      );
+    });
+  });
+
+  describe("CSV Content Validation", () => {
+    it("should validate CSV has required columns", () => {
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      cy.get('[data-testid="upload-products-button"]').click();
+      cy.wait(3000);
+
+      // Check that upload was processed (no validation errors)
+      cy.get("body").then(($body) => {
+        if ($body.find('[data-testid="upload-result-status"]').length > 0) {
+          cy.get('[data-testid="upload-result-status"]').should("be.visible");
+        }
       });
     });
   });

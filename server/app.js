@@ -28,9 +28,11 @@ const {
   securityLogger,
 } = require("./middleware/requestLogger");
 
-// Import rate limiting middleware - CONDITIONAL IMPORT
+// Opsi: prioritaskan DISABLE_RATE_LIMIT daripada environment
+const disableRateLimit = process.env.DISABLE_RATE_LIMIT === "true";
 const isTestEnvironment =
-  process.env.NODE_ENV === "test" || process.env.CYPRESS_TEST === "true";
+  !disableRateLimit &&
+  (process.env.NODE_ENV === "test" || process.env.CYPRESS_TEST === "true");
 
 // Conditional import berdasarkan environment
 let rateLimiters;
@@ -132,22 +134,22 @@ app.use(express.json());
 app.use(fileUpload());
 
 // Apply general rate limiting to all routes
-app.use(generalLimiter);
+if (!disableRateLimit) {
+  // Apply general rate limiting to all routes
+  app.use(generalLimiter);
 
-// Apply specific rate limiters to different route groups
-app.use("/api/users", userManagementLimiter);
-app.use("/api/search", searchLimiter);
-app.use("/api/orders", orderLimiter);
-app.use("/api/order-product", orderLimiter);
-app.use("/api/images", uploadLimiter);
-app.use("/api/main-image", uploadLimiter);
-// app.use("/api/wishlist", wishlistLimiter);
-// app.use("/api/products", productLimiter);
-// app.use("/api/merchants", productLimiter);
-app.use("/api/bulk-upload", uploadLimiter);
-
-// Apply stricter rate limiting to authentication-related routes
-app.use("/api/users/email", authLimiter); // For login attempts via email lookup
+  // Apply specific rate limiters
+  app.use("/api/users", userManagementLimiter);
+  app.use("/api/search", searchLimiter);
+  app.use("/api/orders", orderLimiter);
+  app.use("/api/order-product", orderLimiter);
+  app.use("/api/images", uploadLimiter);
+  app.use("/api/main-image", uploadLimiter);
+  app.use("/api/bulk-upload", uploadLimiter);
+  app.use("/api/users/email", authLimiter);
+} else {
+  console.log("⚠️  Rate limiting DISABLED via DISABLE_RATE_LIMIT=true");
+}
 
 // Apply admin rate limiting to admin routes
 
@@ -217,6 +219,14 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
   console.log(`Test mode: ${isTestEnvironment ? "ENABLED" : "DISABLED"}`);
-  console.log("Rate limiting and request logging enabled for all endpoints");
+
+  if (disableRateLimit) {
+    console.log("❌ Rate limiting is DISABLED (DISABLE_RATE_LIMIT=true)");
+  } else {
+    console.log(
+      "✅ Rate limiting and request logging enabled for all endpoints"
+    );
+  }
+
   console.log("Logs are being written to server/logs/ directory");
 });

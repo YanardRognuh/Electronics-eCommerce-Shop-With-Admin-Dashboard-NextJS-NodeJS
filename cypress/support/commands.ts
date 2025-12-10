@@ -81,6 +81,30 @@ declare global {
       fillCheckoutForm(formData: CheckoutFormData): Chainable<void>;
 
       /**
+       * Custom command untuk clear Test category Admin
+       * @example cy.clearTestCategory()
+       */
+      clearTestCategory(): Chainable<void>;
+
+      /**
+       * Custom command untuk clear Test Merchant
+       * Command ini akan menghapus semua merchant test yang dibuat selama testing
+       * kecuali Demo Merchant yang merupakan data seed
+       * @example cy.clearTestMerchant()
+       */
+      clearTestMerchant(): Chainable<void>;
+
+      resetDemoMerchant(): Chainable<void>;
+
+      clearTestBulkUploadBatches(): Chainable<void>;
+      clearBulkUploadTestProducts(): Chainable<void>;
+      /**
+       * Custom command untuk clear Test user Admin
+       * @example cy.clearTestCategory()
+       */
+      clearTestUser(): Chainable<void>;
+
+      /**
        * Custom command untuk wait for page load
        * @example cy.waitForPageLoad()
        */
@@ -327,3 +351,246 @@ Cypress.Commands.add("checkVisibility", (selector: string, timeout = 5000) => {
 
 // Prevent TypeScript error
 export {};
+
+Cypress.Commands.add("clearTestCategory", () => {
+  // Ambil semua kategori
+  cy.request("GET", "http://localhost:3001/api/categories").then((response) => {
+    const testCategories = response.body.filter((cat: any) =>
+      cat.name.startsWith("Test ")
+    );
+
+    // Hapus satu per satu via API
+    testCategories.forEach((cat: any) => {
+      cy.request({
+        method: "DELETE",
+        url: `http://localhost:3001/api/categories/${cat.id}`,
+        failOnStatusCode: false, // abaikan error jika sudah dihapus
+      });
+    });
+  });
+});
+
+Cypress.Commands.add("clearTestUser", () => {
+  cy.request({
+    method: "GET",
+    url: `http://localhost:3001/api/users`,
+    failOnStatusCode: false,
+  }).then((response) => {
+    if (response.status === 200) {
+      const testUsers = response.body.filter(
+        (user: any) =>
+          typeof user.email === "string" &&
+          user.email.includes("@example.com") &&
+          user.email !== "admin@example.com" &&
+          user.email !== "user@example.com"
+      );
+
+      testUsers.forEach((user: any) => {
+        cy.request({
+          method: "DELETE",
+          url: `http://localhost:3001/api/users/${user.id}`,
+          failOnStatusCode: false,
+        });
+      });
+    }
+  });
+});
+
+Cypress.Commands.add("clearTestMerchant", () => {
+  cy.request({
+    method: "GET",
+    url: `http://localhost:3001/api/merchants`,
+    failOnStatusCode: false,
+  }).then((response) => {
+    if (response.status === 200 && Array.isArray(response.body)) {
+      // Filter merchant yang merupakan test data
+      // Exclude Demo Merchant (id: "1" atau name: "Demo Merchant")
+      const testMerchants = response.body.filter(
+        (merchant: any) =>
+          // Jangan hapus merchant dengan id "1" (Demo Merchant seed data)
+          merchant.id !== "1" &&
+          // Filter berdasarkan pattern name test
+          typeof merchant.name === "string" &&
+          (merchant.name.includes("Test Merchant") ||
+            merchant.name.includes("Updated Merchant") ||
+            merchant.name.includes("Delete Test"))
+      );
+
+      cy.log(`Found ${testMerchants.length} test merchant(s) to delete`);
+
+      // Hapus setiap test merchant
+      testMerchants.forEach((merchant: any) => {
+        cy.log(`Deleting merchant: ${merchant.name} (ID: ${merchant.id})`);
+        cy.request({
+          method: "DELETE",
+          url: `http://localhost:3001/api/merchants/${merchant.id}`,
+          failOnStatusCode: false,
+        }).then((deleteResponse) => {
+          if (deleteResponse.status === 200) {
+            cy.log(`Successfully deleted merchant ID: ${merchant.id}`);
+          }
+        });
+      });
+    }
+  });
+});
+
+Cypress.Commands.add("resetDemoMerchant", () => {
+  cy.request({
+    method: "PUT",
+    url: `http://localhost:3001/api/merchants/1`,
+    failOnStatusCode: false,
+    body: {
+      name: "Demo Merchant",
+      description: "This is demo merchant description",
+      email: "merchant@example.com",
+      phone: "1234567890",
+      address: "123 Demo St, Demo City, DM 12345",
+      status: "active",
+    },
+  });
+});
+
+Cypress.Commands.add("clearTestBulkUploadBatches", () => {
+  cy.request({
+    method: "GET",
+    url: `http://localhost:3001/api/bulk-upload`,
+    failOnStatusCode: false,
+  }).then((response) => {
+    if (response.status === 200 && response.body?.batches) {
+      const batches = response.body.batches;
+      cy.log(`Found ${batches.length} batch(es) in upload history`);
+
+      // Filter test batches (batches yang dibuat dari test file)
+      const testBatches = batches.filter((batch: any) => {
+        // Filter berdasarkan filename yang mengandung "bulk-upload-example" atau "test"
+        const isTestFile =
+          typeof batch.fileName === "string" &&
+          (batch.fileName.includes("bulk-upload-example") ||
+            batch.fileName.includes("test-") ||
+            batch.fileName.includes("bulk-upload-invalid") ||
+            batch.fileName.includes("bulk-upload-duplicate") ||
+            batch.fileName.includes("bulk-upload-empty") ||
+            batch.fileName.includes("bulk-upload-large") ||
+            batch.fileName.toLowerCase().includes("test"));
+
+        // Filter berdasarkan uploadedAt yang recent (dalam 2 jam terakhir)
+        // untuk menghindari menghapus batch yang legitimate
+        const isRecent =
+          new Date().getTime() - new Date(batch.uploadedAt).getTime() < 7200000; // 2 hours
+
+        return isTestFile && isRecent;
+      });
+
+      cy.log(`Found ${testBatches.length} test batch(es) to delete`);
+
+      // Hapus setiap test batch beserta products-nya
+      testBatches.forEach((batch: any) => {
+        cy.log(
+          `Deleting batch: ${batch.fileName} (ID: ${batch.id}) with ${
+            batch.successfulRecords || 0
+          } products`
+        );
+
+        // Delete batch with products using deleteProducts query param
+        cy.request({
+          method: "DELETE",
+          url: `http://localhost:3001/api/bulk-upload/${batch.id}?deleteProducts=true`,
+          failOnStatusCode: false,
+        }).then((deleteResponse) => {
+          if (deleteResponse.status === 200) {
+            cy.log(
+              `✅ Successfully deleted batch ID: ${batch.id} with products`
+            );
+          } else if (deleteResponse.status === 409) {
+            // Products are in orders, delete batch only
+            cy.log(
+              `⚠️ Products in orders, deleting batch only for ID: ${batch.id}`
+            );
+
+            cy.request({
+              method: "DELETE",
+              url: `http://localhost:3001/api/bulk-upload/${batch.id}?deleteProducts=false`,
+              failOnStatusCode: false,
+            }).then((retryResponse) => {
+              if (retryResponse.status === 200) {
+                cy.log(
+                  `✅ Successfully deleted batch ID (products kept): ${batch.id}`
+                );
+              }
+            });
+          } else if (deleteResponse.status === 404) {
+            cy.log(`⚠️ Batch not found: ${batch.id}`);
+          }
+        });
+      });
+    }
+  });
+});
+
+Cypress.Commands.add("clearBulkUploadTestProducts", () => {
+  cy.request({
+    method: "GET",
+    url: `http://localhost:3001/api/products`,
+    failOnStatusCode: false,
+  }).then((response) => {
+    if (response.status === 200 && Array.isArray(response.body)) {
+      // Filter products dari bulk upload test berdasarkan slug patterns
+      const testProducts = response.body.filter((product: any) => {
+        // Filter berdasarkan slug atau title dari CSV test
+        const testSlugs = [
+          "samsung-galaxy-s24-ultra",
+          "apple-macbook-pro-16-m3",
+          "sony-wh-1000xm5-headphones",
+          "lg-oled-c3-55-smart-tv",
+          "canon-eos-r6-mark-ii-camera",
+          "test-no-price",
+          "test-no-title",
+          "test-invalid-stock",
+          "duplicate-slug-test",
+          "test-invalid-types",
+          "test-special-chars",
+        ];
+
+        // Check slug
+        const hasTestSlug =
+          typeof product.slug === "string" &&
+          (testSlugs.includes(product.slug) ||
+            product.slug.startsWith("test-product-bulk-") ||
+            product.slug.startsWith("test-large-") ||
+            product.slug.startsWith("test-product-"));
+
+        // Check title patterns
+        const hasTestTitle =
+          typeof product.title === "string" &&
+          (product.title.includes("Samsung Galaxy S24") ||
+            product.title.includes("MacBook Pro 16") ||
+            product.title.includes("WH-1000XM5") ||
+            product.title.includes("LG OLED C3") ||
+            product.title.includes("Canon EOS R6") ||
+            product.title.startsWith("Test Product"));
+
+        return hasTestSlug || hasTestTitle;
+      });
+
+      cy.log(`Found ${testProducts.length} test product(s) to delete`);
+
+      testProducts.forEach((product: any) => {
+        cy.log(`Deleting product: ${product.title} (ID: ${product.id})`);
+        cy.request({
+          method: "DELETE",
+          url: `http://localhost:3001/api/products/${product.id}`,
+          failOnStatusCode: false,
+        }).then((deleteResponse) => {
+          if (deleteResponse.status === 200 || deleteResponse.status === 204) {
+            cy.log(`✅ Successfully deleted product ID: ${product.id}`);
+          } else if (deleteResponse.status === 400) {
+            cy.log(
+              `⚠️ Cannot delete product ID ${product.id} - may be in orders`
+            );
+          }
+        });
+      });
+    }
+  });
+});

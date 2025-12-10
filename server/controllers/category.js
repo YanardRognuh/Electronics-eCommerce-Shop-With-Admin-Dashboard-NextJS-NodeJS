@@ -9,11 +9,21 @@ const createCategory = asyncHandler(async (request, response) => {
     throw new AppError("Category name is required", 400);
   }
 
-  const category = await prisma.category.create({
-    data: {
-      name: name.trim(),
-    },
+  const trimmedName = name.trim();
+
+  // Cek duplikat tanpa `id: { not }`
+  const existing = await prisma.category.findFirst({
+    where: { name: trimmedName },
   });
+
+  if (existing) {
+    throw new AppError("Category name already exists", 400);
+  }
+
+  const category = await prisma.category.create({
+    data: { name: trimmedName },
+  });
+
   return response.status(201).json(category);
 });
 
@@ -29,23 +39,28 @@ const updateCategory = asyncHandler(async (request, response) => {
     throw new AppError("Category name is required", 400);
   }
 
+  const trimmedName = name.trim();
+
   const existingCategory = await prisma.category.findUnique({
-    where: {
-      id: id,
-    },
+    where: { id: id },
   });
 
   if (!existingCategory) {
     throw new AppError("Category not found", 404);
   }
 
+  // Cek duplikat, kecuali untuk kategori ini sendiri
+  const existing = await prisma.category.findFirst({
+    where: { name: trimmedName, id: { not: id } }, // ✅ gunakan `id`, bukan `categoryId`
+  });
+
+  if (existing) {
+    throw new AppError("Category name already exists", 400);
+  }
+
   const updatedCategory = await prisma.category.update({
-    where: {
-      id: existingCategory.id,
-    },
-    data: {
-      name: name.trim(),
-    },
+    where: { id: id },
+    data: { name: trimmedName },
   });
 
   return response.status(200).json(updatedCategory);
@@ -99,11 +114,11 @@ const getCategory = asyncHandler(async (request, response) => {
       id: id,
     },
   });
-  
+
   if (!category) {
     throw new AppError("Category not found", 404);
   }
-  
+
   return response.status(200).json(category);
 });
 

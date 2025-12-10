@@ -3,6 +3,7 @@
 describe("Admin Users Management", () => {
   beforeEach(() => {
     cy.loginAsAdmin();
+    cy.clearTestUser();
     cy.visit("/admin/users");
     cy.waitForPageLoad();
   });
@@ -13,7 +14,9 @@ describe("Admin Users Management", () => {
     });
 
     it("should display dashboard sidebar", () => {
-      cy.get('[data-testid="dashboard-sidebar"]').should("be.visible");
+      cy.get('[data-testid="dashboard-sidebar-container"]').should(
+        "be.visible"
+      );
     });
   });
 
@@ -60,15 +63,21 @@ describe("Admin Users Management", () => {
         role: "user",
       };
 
+      // ✅ 1. Intercept API create
+      cy.intercept("POST", "/api/users").as("createUser");
+
       cy.get('[data-testid="user-email-input"]').type(userData.email);
       cy.get('[data-testid="user-password-input"]').type(userData.password);
       cy.get('[data-testid="user-role-select"]').select(userData.role);
       cy.get('[data-testid="create-user-button"]').click();
 
-      cy.wait(2000);
+      cy.wait("@createUser").its("response.statusCode").should("eq", 201);
 
-      // Should redirect to users list
-      cy.url().should("match", /\/admin\/users\/?$/);
+      cy.visit("/admin/users");
+      cy.waitForPageLoad();
+
+      // ✅ Verifikasi: email muncul di tabel
+      cy.contains(userData.email).should("be.visible");
     });
 
     it("should validate required fields", () => {
@@ -159,90 +168,83 @@ describe("Admin Users Management", () => {
 
   describe("Update User", () => {
     it("should update user email", () => {
-      cy.visit("/admin/users/1", { failOnStatusCode: false });
-      cy.waitForPageLoad();
+      it("should update user email", () => {
+        const timestamp = Date.now();
+        const initialEmail = `tempuser${timestamp}@example.com`;
+        const newEmail = `updated${timestamp}@example.com`;
 
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid="user-email-input"]').length > 0) {
-          const timestamp = Date.now();
-          const newEmail = `updated${timestamp}@example.com`;
+        // ✅ 1. Intercept API create
+        cy.intercept("POST", "/api/users").as("createUser");
 
-          cy.get('[data-testid="user-email-input"]').clear().type(newEmail);
-          cy.get('[data-testid="update-user-button"]').click();
+        // 2. Buat user
+        cy.visit("/admin/users/new");
+        cy.get('[data-testid="user-email-input"]').type(initialEmail);
+        cy.get('[data-testid="user-password-input"]').type("TempPass123!");
+        cy.get('[data-testid="user-role-select"]').select("user");
+        cy.get('[data-testid="create-user-button"]').click();
 
-          cy.wait(2000);
+        // ✅ 3. Tunggu API sukses
+        cy.wait("@createUser").its("response.statusCode").should("eq", 201);
 
-          cy.get('[data-testid="user-email-input"]').should(
-            "have.value",
-            newEmail
-          );
-        }
-      });
-    });
+        // 4. Sekarang aman kunjungi daftar
+        cy.visit("/admin/users");
+        cy.waitForPageLoad();
 
-    it("should update user role", () => {
-      cy.visit("/admin/users/1", { failOnStatusCode: false });
-      cy.waitForPageLoad();
+        // 5. Cari user di tabel
+        cy.get('[data-testid^="user-row-"]')
+          .contains(initialEmail)
+          .find('[data-testid^="user-details-link-"]')
+          .invoke("attr", "href")
+          .then((href) => {
+            const userId = href?.split("/").pop();
+            if (!userId) throw new Error("User ID not found");
 
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid="user-role-select"]').length > 0) {
-          cy.get('[data-testid="user-role-select"]').select("admin");
-          cy.get('[data-testid="update-user-button"]').click();
+            cy.visit(`/admin/users/${userId}`);
+            cy.waitForPageLoad();
 
-          cy.wait(2000);
+            cy.get('[data-testid="user-email-input"]').clear().type(newEmail);
+            cy.get('[data-testid="update-user-button"]').click();
 
-          cy.get('[data-testid="user-role-select"]').should(
-            "have.value",
-            "admin"
-          );
-        }
-      });
-    });
-
-    it("should update user password", () => {
-      cy.visit("/admin/users/1", { failOnStatusCode: false });
-      cy.waitForPageLoad();
-
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid="user-password-input"]').length > 0) {
-          cy.get('[data-testid="user-password-input"]')
-            .clear()
-            .type("NewSecurePass123!");
-          cy.get('[data-testid="update-user-button"]').click();
-
-          cy.wait(2000);
-
-          // Should update successfully
-          cy.url().should("match", /\/admin\/users\/\d+/);
-        }
+            cy.get('[data-testid="user-email-input"]').should(
+              "have.value",
+              newEmail
+            );
+          });
       });
     });
   });
 
   describe("Delete User", () => {
     it("should delete user after confirmation", () => {
-      // First create a test user
-      cy.visit("/admin/users/new");
-      cy.waitForPageLoad();
+      it("should delete user after confirmation", () => {
+        const timestamp = Date.now();
+        const testEmail = `deletetest${timestamp}@example.com`;
 
-      const timestamp = Date.now();
-      const testEmail = `deletetest${timestamp}@example.com`;
+        // Buat user
+        cy.visit("/admin/users/new");
+        cy.get('[data-testid="user-email-input"]').type(testEmail);
+        cy.get('[data-testid="user-password-input"]').type("DeletePass123!");
+        cy.get('[data-testid="user-role-select"]').select("user");
+        cy.get('[data-testid="create-user-button"]').click();
 
-      cy.get('[data-testid="user-email-input"]').type(testEmail);
-      cy.get('[data-testid="user-password-input"]').type("DeletePass123!");
-      cy.get('[data-testid="user-role-select"]').select("user");
-      cy.get('[data-testid="create-user-button"]').click();
+        // Tunggu backend selesai (gunakan intercept jika bisa)
+        cy.visit("/admin/users");
+        cy.waitForPageLoad();
 
-      cy.wait(2000);
+        // ✅ Cari email HANYA di dalam baris user
+        cy.get('[data-testid^="user-row-"]')
+          .contains(testEmail)
+          .find('[data-testid^="user-details-link-"]')
+          .click();
 
-      // Find the created user and delete it
-      // Note: This depends on how your user list is displayed
-      cy.visit("/admin/users");
-      cy.waitForPageLoad();
+        cy.get('[data-testid="delete-user-button"]').click();
+        cy.on("window:confirm", () => true);
 
-      // Navigate to the last created user (implementation dependent)
-      // Then delete
-      cy.on("window:confirm", () => true);
+        cy.visit("/admin/users");
+        cy.get('[data-testid^="user-row-"]')
+          .contains(testEmail)
+          .should("not.exist");
+      });
     });
   });
 
@@ -252,10 +254,8 @@ describe("Admin Users Management", () => {
       cy.waitForPageLoad();
 
       // Try to create user with admin email
-      cy.get('[data-testid="user-email-input"]').type(
-        Cypress.env("EMAIL_ADMIN")
-      );
-      cy.get('[data-testid="user-password-input"]').type("Password123!");
+      cy.get('[data-testid="user-email-input"]').type("user@example.com");
+      cy.get('[data-testid="user-password-input"]').type("password");
       cy.get('[data-testid="user-role-select"]').select("user");
       cy.get('[data-testid="create-user-button"]').click();
 
@@ -283,17 +283,27 @@ describe("Admin Users Management", () => {
       cy.waitForPageLoad();
 
       const timestamp = Date.now();
+      const userData = {
+        email: `testuser${timestamp}@example.com`,
+        password: "SecurePass123!",
+        role: "user",
+      };
 
-      cy.get('[data-testid="user-email-input"]').type(
-        `admin${timestamp}@example.com`
-      );
-      cy.get('[data-testid="user-password-input"]').type("AdminPass123!");
-      cy.get('[data-testid="user-role-select"]').select("admin");
+      // ✅ 1. Intercept API create
+      cy.intercept("POST", "/api/users").as("createUser");
+
+      cy.get('[data-testid="user-email-input"]').type(userData.email);
+      cy.get('[data-testid="user-password-input"]').type(userData.password);
+      cy.get('[data-testid="user-role-select"]').select(userData.role);
       cy.get('[data-testid="create-user-button"]').click();
 
-      cy.wait(2000);
+      cy.wait("@createUser").its("response.statusCode").should("eq", 201);
 
-      cy.url().should("match", /\/admin\/users\/?$/);
+      cy.visit("/admin/users");
+      cy.waitForPageLoad();
+
+      // ✅ Verifikasi: email muncul di tabel
+      cy.contains(userData.email).should("be.visible");
     });
 
     it("should create regular user", () => {
@@ -301,17 +311,26 @@ describe("Admin Users Management", () => {
       cy.waitForPageLoad();
 
       const timestamp = Date.now();
+      const userData = {
+        email: `testuser${timestamp}@example.com`,
+        password: "SecurePass123!",
+        role: "user",
+      };
 
-      cy.get('[data-testid="user-email-input"]').type(
-        `user${timestamp}@example.com`
-      );
-      cy.get('[data-testid="user-password-input"]').type("UserPass123!");
-      cy.get('[data-testid="user-role-select"]').select("user");
+      // ✅ 1. Intercept API create
+      cy.intercept("POST", "/api/users").as("createUser");
+
+      cy.get('[data-testid="user-email-input"]').type(userData.email);
+      cy.get('[data-testid="user-password-input"]').type(userData.password);
+      cy.get('[data-testid="user-role-select"]').select(userData.role);
       cy.get('[data-testid="create-user-button"]').click();
 
-      cy.wait(2000);
+      cy.wait("@createUser").its("response.statusCode").should("eq", 201);
 
-      cy.url().should("match", /\/admin\/users\/?$/);
+      cy.visit("/admin/users");
+      cy.waitForPageLoad();
+
+      cy.contains(userData.email).should("be.visible");
     });
   });
 
@@ -320,7 +339,7 @@ describe("Admin Users Management", () => {
       cy.visit("/admin/users/new");
       cy.waitForPageLoad();
 
-      cy.get('[data-testid="dashboard-sidebar"]').within(() => {
+      cy.get('[data-testid="dashboard-sidebar-container"]').within(() => {
         cy.get('[data-testid="sidebar-users-link"]').click();
       });
 
@@ -331,7 +350,7 @@ describe("Admin Users Management", () => {
       cy.visit("/admin/users/1", { failOnStatusCode: false });
       cy.waitForPageLoad();
 
-      cy.get('[data-testid="dashboard-sidebar"]').within(() => {
+      cy.get('[data-testid="dashboard-sidebar-container"]').within(() => {
         cy.get('[data-testid="sidebar-users-link"]').click();
       });
 

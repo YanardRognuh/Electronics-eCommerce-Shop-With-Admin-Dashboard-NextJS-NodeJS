@@ -7,6 +7,11 @@ describe("Admin Merchants Management", () => {
     cy.waitForPageLoad();
   });
 
+  afterEach(() => {
+    cy.clearTestMerchant();
+    cy.resetDemoMerchant();
+  });
+
   describe("Merchants Page Layout", () => {
     it("should display merchants page", () => {
       cy.get('[data-testid="merchant-page-container"]').should("be.visible");
@@ -17,7 +22,9 @@ describe("Admin Merchants Management", () => {
     });
 
     it("should display add merchant link", () => {
-      cy.get('[data-testid="add-merchant-link"]').should("be.visible");
+      cy.get('[data-testid="add-merchant-link"]')
+        .scrollIntoView()
+        .should("be.visible");
     });
 
     it("should display merchants table", () => {
@@ -27,11 +34,21 @@ describe("Admin Merchants Management", () => {
     });
 
     it("should display table headers", () => {
-      cy.get('[data-testid="merchant-name-header"]').should("be.visible");
-      cy.get('[data-testid="merchant-email-header"]').should("be.visible");
-      cy.get('[data-testid="merchant-status-header"]').should("be.visible");
-      cy.get('[data-testid="merchant-products-header"]').should("be.visible");
-      cy.get('[data-testid="merchant-actions-header"]').should("be.visible");
+      cy.get('[data-testid="merchant-name-header"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-email-header"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-status-header"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-products-header"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-actions-header"]')
+        .scrollIntoView()
+        .should("be.visible");
     });
   });
 
@@ -52,13 +69,20 @@ describe("Admin Merchants Management", () => {
     it("should display merchant details in each row", () => {
       cy.get('[data-testid^="merchant-row-"]')
         .first()
+        .scrollIntoView()
         .within(() => {
-          cy.get('[data-testid^="merchant-name-"]').should("be.visible");
-          cy.get('[data-testid^="merchant-email-"]').should("be.visible");
-          cy.get('[data-testid^="merchant-status-"]').should("be.visible");
-          cy.get('[data-testid^="merchant-products-count-"]').should(
-            "be.visible"
-          );
+          cy.get('[data-testid^="merchant-name-"]')
+            .scrollIntoView()
+            .should("be.visible");
+          cy.get('[data-testid^="merchant-email-"]')
+            .scrollIntoView()
+            .should("be.visible");
+          cy.get('[data-testid^="merchant-status-"]')
+            .scrollIntoView()
+            .should("be.visible");
+          cy.get('[data-testid^="merchant-products-count-"]')
+            .scrollIntoView()
+            .should("be.visible");
         });
     });
 
@@ -73,18 +97,23 @@ describe("Admin Merchants Management", () => {
     it("should display merchant emails", () => {
       cy.get('[data-testid^="merchant-email-"]')
         .first()
+        .scrollIntoView()
         .should("be.visible")
         .invoke("text")
         .should("match", /@/);
     });
 
     it("should display merchant status", () => {
-      cy.get('[data-testid^="merchant-status-"]').first().should("be.visible");
+      cy.get('[data-testid^="merchant-status-"]')
+        .first()
+        .scrollIntoView()
+        .should("be.visible");
     });
 
     it("should display products count", () => {
       cy.get('[data-testid^="merchant-products-count-"]')
         .first()
+        .scrollIntoView()
         .should("be.visible")
         .invoke("text")
         .should("match", /\d+/);
@@ -107,24 +136,38 @@ describe("Admin Merchants Management", () => {
       cy.get('[data-testid="add-merchant-link"]').click();
 
       cy.url().should("include", "/admin/merchant/new");
-      cy.get('[data-testid="new-merchant-page-container"]').should(
-        "be.visible"
-      );
+      cy.get('[data-testid="new-merchant-page-container"]')
+        .scrollIntoView()
+        .should("be.visible");
     });
 
     it("should display add merchant form", () => {
       cy.get('[data-testid="add-merchant-link"]').click();
 
-      cy.get('[data-testid="add-new-merchant-title"]').should("be.visible");
-      cy.get('[data-testid="merchant-name-input"]').should("be.visible");
-      cy.get('[data-testid="merchant-email-input"]').should("be.visible");
-      cy.get('[data-testid="merchant-phone-input"]').should("be.visible");
-      cy.get('[data-testid="merchant-status-select"]').should("be.visible");
-      cy.get('[data-testid="merchant-address-input"]').should("be.visible");
-      cy.get('[data-testid="merchant-description-textarea"]').should(
-        "be.visible"
-      );
-      cy.get('[data-testid="create-merchant-button"]').should("be.visible");
+      cy.get('[data-testid="add-new-merchant-title"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-name-input"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-email-input"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-phone-input"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-status-select"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-address-input"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-description-textarea"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="create-merchant-button"]')
+        .scrollIntoView()
+        .should("be.visible");
     });
 
     it("should display status options", () => {
@@ -140,7 +183,7 @@ describe("Admin Merchants Management", () => {
       const timestamp = Date.now();
       const merchantData = {
         name: `Test Merchant ${timestamp}`,
-        email: `merchant${timestamp}@example.com`,
+        email: `merchanttest@example.com`,
         phone: "+1234567890",
         address: "123 Business St",
         description: "Test merchant description",
@@ -181,7 +224,9 @@ describe("Admin Merchants Management", () => {
     it("should validate email format", () => {
       cy.get('[data-testid="add-merchant-link"]').click();
 
-      cy.get('[data-testid="merchant-name-input"]').type("Test Merchant");
+      cy.get('[data-testid="merchant-name-input"]')
+        .scrollIntoView()
+        .type("Test Merchant");
       cy.get('[data-testid="merchant-email-input"]').type("invalid-email");
       cy.get('[data-testid="merchant-phone-input"]').type("+1234567890");
       cy.get('[data-testid="create-merchant-button"]').click();
@@ -193,7 +238,10 @@ describe("Admin Merchants Management", () => {
     it("should have cancel link", () => {
       cy.get('[data-testid="add-merchant-link"]').click();
 
-      cy.get('[data-testid="cancel-link"]').should("be.visible").click();
+      cy.get('[data-testid="cancel-link"]')
+        .scrollIntoView()
+        .should("be.visible")
+        .click();
 
       cy.url().should("match", /\/admin\/merchant\/?$/);
     });
@@ -201,35 +249,52 @@ describe("Admin Merchants Management", () => {
 
   describe("View Merchant Details", () => {
     it("should navigate to merchant details page", () => {
-      cy.get('[data-testid^="merchant-view-link-"]').first().click();
+      cy.get('[data-testid^="merchant-view-link-"]')
+        .first()
+        .scrollIntoView()
+        .click();
 
       cy.url().should("match", /\/admin\/merchant\/\d+/);
-      cy.get('[data-testid="merchant-detail-page-container"]').should(
-        "be.visible"
-      );
+      cy.get('[data-testid="merchant-detail-page-container"]')
+        .scrollIntoView()
+        .should("be.visible");
     });
 
     it("should display merchant details", () => {
       cy.get('[data-testid^="merchant-view-link-"]').first().click();
 
-      cy.get('[data-testid="merchant-details-title"]').should("be.visible");
-      cy.get('[data-testid="merchant-name-input"]').should("be.visible");
-      cy.get('[data-testid="merchant-email-input"]').should("be.visible");
-      cy.get('[data-testid="merchant-phone-input"]').should("be.visible");
-      cy.get('[data-testid="merchant-status-select"]').should("be.visible");
-      cy.get('[data-testid="merchant-address-input"]').should("be.visible");
-      cy.get('[data-testid="merchant-description-textarea"]').should(
-        "be.visible"
-      );
+      cy.get('[data-testid="merchant-details-title"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-name-input"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-email-input"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-phone-input"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-status-select"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-address-input"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-description-textarea"]')
+        .scrollIntoView()
+        .should("be.visible");
     });
 
     it("should display merchant products section", () => {
       cy.get('[data-testid^="merchant-view-link-"]').first().click();
 
-      cy.get('[data-testid="merchant-products-title"]').should("be.visible");
-      cy.get('[data-testid="merchant-products-container"]').should(
-        "be.visible"
-      );
+      cy.get('[data-testid="merchant-products-title"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="merchant-products-container"]')
+        .scrollIntoView()
+        .should("be.visible");
     });
 
     it("should display merchant products table", () => {
@@ -237,18 +302,28 @@ describe("Admin Merchants Management", () => {
 
       cy.get("body").then(($body) => {
         if ($body.find('[data-testid="merchant-products-table"]').length > 0) {
-          cy.get('[data-testid="merchant-products-table"]').should(
-            "be.visible"
-          );
-          cy.get('[data-testid="merchant-products-table-header"]').should(
-            "be.visible"
-          );
-          cy.get('[data-testid="product-title-header"]').should("be.visible");
-          cy.get('[data-testid="product-price-header"]').should("be.visible");
-          cy.get('[data-testid="product-stock-header"]').should("be.visible");
-          cy.get('[data-testid="product-actions-header"]').should("be.visible");
+          cy.get('[data-testid="merchant-products-table"]')
+            .scrollIntoView()
+            .should("be.visible");
+          cy.get('[data-testid="merchant-products-table-header"]')
+            .scrollIntoView()
+            .should("be.visible");
+          cy.get('[data-testid="product-title-header"]')
+            .scrollIntoView()
+            .should("be.visible");
+          cy.get('[data-testid="product-price-header"]')
+            .scrollIntoView()
+            .should("be.visible");
+          cy.get('[data-testid="product-stock-header"]')
+            .scrollIntoView()
+            .should("be.visible");
+          cy.get('[data-testid="product-actions-header"]')
+            .scrollIntoView()
+            .should("be.visible");
         } else {
-          cy.get('[data-testid="no-products-message"]').should("be.visible");
+          cy.get('[data-testid="no-products-message"]')
+            .scrollIntoView()
+            .should("be.visible");
         }
       });
     });
@@ -256,14 +331,20 @@ describe("Admin Merchants Management", () => {
     it("should display action buttons", () => {
       cy.get('[data-testid^="merchant-view-link-"]').first().click();
 
-      cy.get('[data-testid="save-changes-button"]').should("be.visible");
-      cy.get('[data-testid="delete-merchant-button"]').should("be.visible");
+      cy.get('[data-testid="save-changes-button"]')
+        .scrollIntoView()
+        .should("be.visible");
+      cy.get('[data-testid="delete-merchant-button"]')
+        .scrollIntoView()
+        .should("be.visible");
     });
 
     it("should have back to merchants link", () => {
       cy.get('[data-testid^="merchant-view-link-"]').first().click();
 
-      cy.get('[data-testid="back-to-merchants-link"]').should("be.visible");
+      cy.get('[data-testid="back-to-merchants-link"]')
+        .scrollIntoView()
+        .should("be.visible");
     });
   });
 
@@ -466,7 +547,7 @@ describe("Admin Merchants Management", () => {
     it("should navigate from sidebar", () => {
       cy.get('[data-testid^="merchant-view-link-"]').first().click();
 
-      cy.get('[data-testid="dashboard-sidebar"]').within(() => {
+      cy.get('[data-testid="dashboard-sidebar-container"]').within(() => {
         cy.get('[data-testid="sidebar-merchant-link"]').click();
       });
 
