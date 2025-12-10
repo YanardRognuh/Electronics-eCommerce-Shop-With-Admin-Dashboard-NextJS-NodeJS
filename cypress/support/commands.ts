@@ -126,7 +126,7 @@ Cypress.Commands.add("login", (email: string, password: string) => {
     // Verify redirect after successful login
     cy.url().should("not.include", "/login");
     // Kurangi waktu tunggu dari 500ms menjadi 200ms
-    cy.wait(500);
+    cy.wait(200);
   });
 });
 
@@ -210,13 +210,13 @@ Cypress.Commands.add("addToCart", (productId?: string) => {
   cy.contains("button", /add to cart/i).click();
 
   // Kurangi waktu tunggu dari 1000ms menjadi 500ms
-  cy.wait(1000);
+  cy.wait(500);
 });
 
 Cypress.Commands.add("clearCart", () => {
   cy.visit("/cart");
   // Kurangi waktu tunggu dari 1000ms menjadi 300ms
-  cy.wait(1000);
+  cy.wait(300);
 
   cy.get("body").then(($body) => {
     if ($body.find('[data-testid^="remove-item-button-"]').length > 0) {
@@ -224,7 +224,7 @@ Cypress.Commands.add("clearCart", () => {
       cy.get('[data-testid^="remove-item-button-"]').each(($btn) => {
         cy.wrap($btn).click();
         // Kurangi waktu tunggu dari 500ms menjadi 200ms
-        cy.wait(500);
+        cy.wait(200);
       });
     }
   });

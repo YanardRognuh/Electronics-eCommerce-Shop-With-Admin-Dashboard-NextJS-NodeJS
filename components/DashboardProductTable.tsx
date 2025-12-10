@@ -57,7 +57,7 @@ const DashboardProductTable = () => {
       </div>
 
       <div
-        className="xl:ml-5 w-full max-xl:mt-5 overflow-auto w-full h-[80vh]"
+        className="xl:ml-5 w-full max-xl:mt-5 overflow-auto w-full max-h-[80vh]"
         data-testid="product-table-wrapper"
       >
         <table

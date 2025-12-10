@@ -1432,3 +1432,17 @@
 ::1 - - [07/Dec/2025:15:28:59 +0000] "OPTIONS /api/notifications/e4625b79-3789-4ee4-8fed-74c1595ddffd/unread-count HTTP/1.1" 204 0 "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" reqId=cPf_T7LT userId=anonymous
 ::1 - - [07/Dec/2025:15:28:59 +0000] "GET /api/notifications/e4625b79-3789-4ee4-8fed-74c1595ddffd/unread-count HTTP/1.1" 304 - "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" reqId=0o9reeX7 userId=anonymous
 ::1 - - [07/Dec/2025:15:29:20 +0000] "GET /api/products HTTP/1.1" 200 3571 "-" "node" reqId=xm-MFs-a userId=anonymous
+::1 - - [10/Dec/2025:00:29:49 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=_0853_Oy userId=anonymous
+::1 - - [10/Dec/2025:00:29:53 +0000] "GET /api/categories HTTP/1.1" 500 97 "-" "node" reqId=IWMFbHQF userId=anonymous
+::1 - - [10/Dec/2025:00:29:58 +0000] "GET /api/users/email/admin@example.com HTTP/1.1" 500 97 "-" "node" reqId=RZlVENGG userId=anonymous
+::1 - - [10/Dec/2025:00:30:39 +0000] "GET /api/products HTTP/1.1" 500 97 "-" "node" reqId=0ACJsFyJ userId=anonymous
+::1 - - [10/Dec/2025:00:31:06 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=Ktpf6-ef userId=anonymous
+::1 - - [10/Dec/2025:00:31:06 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=m76HudAP userId=anonymous
+::1 - - [10/Dec/2025:00:31:06 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=_RbvqsUx userId=anonymous
+::1 - - [10/Dec/2025:00:31:06 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=DE0IQpJy userId=anonymous
+::1 - - [10/Dec/2025:00:31:06 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=oIVEDRxi userId=anonymous
+::1 - - [10/Dec/2025:00:31:06 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=vexmwfGX userId=anonymous
+::1 - - [10/Dec/2025:00:31:06 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=ikdKTCL3 userId=anonymous
+::1 - - [10/Dec/2025:00:31:06 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=IUdtgjrS userId=anonymous
+::1 - - [10/Dec/2025:00:31:06 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=R6QdCHmR userId=anonymous
+::1 - - [10/Dec/2025:00:31:06 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=J_7BRVg0 userId=anonymous
