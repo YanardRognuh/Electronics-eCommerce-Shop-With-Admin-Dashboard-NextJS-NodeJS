@@ -42,14 +42,24 @@ const handlePrismaError = (error) => {
   const prismaError = error;
 
   switch (prismaError.code) {
-    case "P2002":
-      return {
-        error: "A record with this information already exists",
-        details: prismaError.meta?.target
-          ? `Field: ${prismaError.meta.target.join(", ")}`
-          : undefined,
-        timestamp: new Date().toISOString(),
-      };
+    case "P2002": // Unique constraint failed
+      let fields = prismaError.meta?.target;
+
+      // Handle both string and array
+      if (Array.isArray(fields)) {
+        fields = fields.join(", ");
+      } else if (typeof fields === "string") {
+        // Ambil nama field dari constraint (opsional)
+        // Misal: "User_email_key" → "email"
+        fields = fields.replace(/^User_|_key$/g, "").replace(/_/g, " ");
+      } else {
+        fields = "unknown field";
+      }
+
+      return new AppError(
+        `Unique constraint failed on field(s): ${fields}`,
+        409
+      );
     case "P2025":
       return {
         error: "Record not found",

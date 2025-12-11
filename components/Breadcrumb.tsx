@@ -1,5 +1,5 @@
 // *********************
-// Role of the component: Component that displays current page location in the application 
+// Role of the component: Component that displays current page location in the application
 // Name of the component: Breadcrumb.tsx
 // Developer: Aleksandar Kuzmanovic
 // Version: 1.0
@@ -12,9 +12,16 @@ import Link from "next/link";
 import React from "react";
 import { FaHouse } from "react-icons/fa6";
 
-const Breadcrumb = () => {
+interface BreadCrumbProps {
+  "data-testid"?: string;
+}
+
+const Breadcrumb = ({ "data-testid": dataTestId }: BreadCrumbProps) => {
   return (
-    <div className="text-lg breadcrumbs pb-10 py-5 max-sm:text-base">
+    <div
+      className="text-lg breadcrumbs pb-10 py-5 max-sm:text-base"
+      data-testid={dataTestId}
+    >
       <ul>
         <li>
           <Link href="/">

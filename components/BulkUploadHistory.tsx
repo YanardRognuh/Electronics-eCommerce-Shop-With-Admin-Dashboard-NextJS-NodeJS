@@ -160,7 +160,10 @@ const BulkUploadHistory = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
+      <div
+        className="flex justify-center items-center py-12"
+        data-testid="bulk-upload-history-loading"
+      >
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
@@ -168,7 +171,10 @@ const BulkUploadHistory = () => {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+      <div
+        className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700"
+        data-testid="bulk-upload-history-error"
+      >
         {error}
       </div>
     );
@@ -176,40 +182,81 @@ const BulkUploadHistory = () => {
 
   if (batches.length === 0) {
     return (
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center text-gray-500">
-        <FaFileAlt className="text-4xl mx-auto mb-2 text-gray-400" />
+      <div
+        className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center text-gray-500"
+        data-testid="bulk-upload-history-empty"
+      >
+        <FaFileAlt
+          className="text-4xl mx-auto mb-2 text-gray-400"
+          data-testid="no-history-icon"
+        />
         <p>No upload history yet</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-bold mb-4">📜 Upload History</h2>
+    <div className="space-y-4" data-testid="bulk-upload-history-container">
+      <h2
+        className="text-2xl font-bold mb-4"
+        data-testid="bulk-upload-history-title"
+      >
+        📜 Upload History
+      </h2>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && batchToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
-            <div className="flex items-center gap-3 mb-4">
-              <FaExclamationTriangle className="text-yellow-500 text-3xl" />
-              <h3 className="text-xl font-bold">Delete Batch Upload</h3>
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          data-testid="delete-modal-container"
+        >
+          <div
+            className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl"
+            data-testid="delete-modal-content"
+          >
+            <div
+              className="flex items-center gap-3 mb-4"
+              data-testid="delete-modal-header"
+            >
+              <FaExclamationTriangle
+                className="text-yellow-500 text-3xl"
+                data-testid="delete-modal-warning-icon"
+              />
+              <h3
+                className="text-xl font-bold"
+                data-testid="delete-modal-title"
+              >
+                Delete Batch Upload
+              </h3>
             </div>
 
-            <p className="text-gray-700 mb-4">
+            <p
+              className="text-gray-700 mb-4"
+              data-testid="delete-modal-message"
+            >
               Are you sure you want to delete{" "}
               <strong>{batchToDelete.fileName}</strong>?
             </p>
 
-            <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
-              <label className="flex items-start gap-2 cursor-pointer">
+            <div
+              className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4"
+              data-testid="delete-products-warning-container"
+            >
+              <label
+                className="flex items-start gap-2 cursor-pointer"
+                data-testid="delete-products-checkbox-container"
+              >
                 <input
                   type="checkbox"
                   checked={deleteProducts}
                   onChange={(e) => setDeleteProducts(e.target.checked)}
                   className="mt-1"
+                  data-testid="delete-products-checkbox"
                 />
-                <div className="text-sm">
+                <div
+                  className="text-sm"
+                  data-testid="delete-products-warning-text"
+                >
                   <span className="font-semibold text-yellow-800">
                     Also delete all products created from this batch
                   </span>
@@ -222,16 +269,18 @@ const BulkUploadHistory = () => {
               </label>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-3" data-testid="delete-modal-actions">
               <button
                 onClick={handleDeleteCancel}
                 className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
+                data-testid="delete-modal-cancel-button"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteConfirm}
                 className="flex-1 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors font-semibold"
+                data-testid="delete-modal-confirm-button"
               >
                 {deleteProducts
                   ? "Delete Batch & Products"
@@ -246,19 +295,37 @@ const BulkUploadHistory = () => {
         <div
           key={batch.id}
           className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
+          data-testid={`batch-item-${batch.id}`}
         >
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
+          <div
+            className="flex items-start justify-between mb-4"
+            data-testid={`batch-header-${batch.id}`}
+          >
+            <div
+              className="flex items-center gap-3"
+              data-testid={`batch-info-${batch.id}`}
+            >
               {getStatusIcon(batch.status)}
-              <div>
-                <h3 className="font-semibold text-lg">{batch.fileName}</h3>
-                <p className="text-sm text-gray-500">
+              <div data-testid={`batch-details-${batch.id}`}>
+                <h3
+                  className="font-semibold text-lg"
+                  data-testid={`batch-filename-${batch.id}`}
+                >
+                  {batch.fileName}
+                </h3>
+                <p
+                  className="text-sm text-gray-500"
+                  data-testid={`batch-uploaded-by-${batch.id}`}
+                >
                   Uploaded by {batch.uploadedBy} •{" "}
                   {formatDate(batch.uploadedAt)}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div
+              className="flex items-center gap-2"
+              data-testid={`batch-actions-${batch.id}`}
+            >
               <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold ${
                   batch.status === "COMPLETED"
@@ -269,6 +336,7 @@ const BulkUploadHistory = () => {
                     ? "bg-yellow-100 text-yellow-700"
                     : "bg-gray-100 text-gray-700"
                 }`}
+                data-testid={`batch-status-${batch.id}`}
               >
                 {batch.status}
               </span>
@@ -277,37 +345,83 @@ const BulkUploadHistory = () => {
                 disabled={deletingBatchId === batch.id}
                 className="p-2 text-red-500 hover:bg-red-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Delete batch"
+                data-testid={`batch-delete-button-${batch.id}`}
               >
                 {deletingBatchId === batch.id ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-500"></div>
+                  <div
+                    className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-500"
+                    data-testid={`batch-delete-spinner-${batch.id}`}
+                  ></div>
                 ) : (
-                  <FaTrash />
+                  <FaTrash data-testid={`batch-trash-icon-${batch.id}`} />
                 )}
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-4 mb-4">
-            <div className="bg-gray-50 rounded p-3 text-center">
-              <p className="text-2xl font-bold text-gray-700">
+          <div
+            className="grid grid-cols-4 gap-4 mb-4"
+            data-testid={`batch-stats-${batch.id}`}
+          >
+            <div
+              className="bg-gray-50 rounded p-3 text-center"
+              data-testid={`batch-total-records-${batch.id}`}
+            >
+              <p
+                className="text-2xl font-bold text-gray-700"
+                data-testid={`batch-total-value-${batch.id}`}
+              >
                 {batch.totalRecords}
               </p>
-              <p className="text-xs text-gray-500">Total</p>
+              <p
+                className="text-xs text-gray-500"
+                data-testid={`batch-total-label-${batch.id}`}
+              >
+                Total
+              </p>
             </div>
-            <div className="bg-green-50 rounded p-3 text-center">
-              <p className="text-2xl font-bold text-green-600">
+            <div
+              className="bg-green-50 rounded p-3 text-center"
+              data-testid={`batch-successful-records-${batch.id}`}
+            >
+              <p
+                className="text-2xl font-bold text-green-600"
+                data-testid={`batch-successful-value-${batch.id}`}
+              >
                 {batch.successfulRecords}
               </p>
-              <p className="text-xs text-gray-500">Success</p>
+              <p
+                className="text-xs text-gray-500"
+                data-testid={`batch-successful-label-${batch.id}`}
+              >
+                Success
+              </p>
             </div>
-            <div className="bg-red-50 rounded p-3 text-center">
-              <p className="text-2xl font-bold text-red-600">
+            <div
+              className="bg-red-50 rounded p-3 text-center"
+              data-testid={`batch-failed-records-${batch.id}`}
+            >
+              <p
+                className="text-2xl font-bold text-red-600"
+                data-testid={`batch-failed-value-${batch.id}`}
+              >
                 {batch.failedRecords}
               </p>
-              <p className="text-xs text-gray-500">Failed</p>
+              <p
+                className="text-xs text-gray-500"
+                data-testid={`batch-failed-label-${batch.id}`}
+              >
+                Failed
+              </p>
             </div>
-            <div className="bg-blue-50 rounded p-3 text-center">
-              <p className="text-2xl font-bold text-blue-600">
+            <div
+              className="bg-blue-50 rounded p-3 text-center"
+              data-testid={`batch-success-rate-${batch.id}`}
+            >
+              <p
+                className="text-2xl font-bold text-blue-600"
+                data-testid={`batch-success-rate-value-${batch.id}`}
+              >
                 {batch.totalRecords > 0
                   ? Math.round(
                       (batch.successfulRecords / batch.totalRecords) * 100
@@ -315,21 +429,43 @@ const BulkUploadHistory = () => {
                   : 0}
                 %
               </p>
-              <p className="text-xs text-gray-500">Success Rate</p>
+              <p
+                className="text-xs text-gray-500"
+                data-testid={`batch-success-rate-label-${batch.id}`}
+              >
+                Success Rate
+              </p>
             </div>
           </div>
 
           {batch.errors && batch.errors.length > 0 && (
-            <div className="bg-red-50 border border-red-200 rounded p-3">
-              <p className="font-semibold text-red-700 text-sm mb-2">
+            <div
+              className="bg-red-50 border border-red-200 rounded p-3"
+              data-testid={`batch-errors-container-${batch.id}`}
+            >
+              <p
+                className="font-semibold text-red-700 text-sm mb-2"
+                data-testid={`batch-errors-title-${batch.id}`}
+              >
                 Errors ({batch.errors.length}):
               </p>
-              <ul className="list-disc list-inside space-y-1 text-xs text-red-600 max-h-24 overflow-y-auto">
+              <ul
+                className="list-disc list-inside space-y-1 text-xs text-red-600 max-h-24 overflow-y-auto"
+                data-testid={`batch-errors-list-${batch.id}`}
+              >
                 {batch.errors.slice(0, 5).map((error, index) => (
-                  <li key={index}>{error}</li>
+                  <li
+                    key={index}
+                    data-testid={`batch-error-item-${batch.id}-${index}`}
+                  >
+                    {error}
+                  </li>
                 ))}
                 {batch.errors.length > 5 && (
-                  <li className="text-red-500 font-semibold">
+                  <li
+                    className="text-red-500 font-semibold"
+                    data-testid={`batch-more-errors-${batch.id}`}
+                  >
                     ... and {batch.errors.length - 5} more errors
                   </li>
                 )}

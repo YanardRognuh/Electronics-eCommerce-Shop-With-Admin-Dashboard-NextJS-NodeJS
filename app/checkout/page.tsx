@@ -387,8 +387,12 @@ const CheckoutPage = () => {
   }, []);
 
   return (
-    <div className="bg-white">
-      <SectionTitle title="Checkout" path="Home | Cart | Checkout" />
+    <div className="bg-white" data-testid="checkout-page-container">
+      <SectionTitle
+        title="Checkout"
+        path="Home | Cart | Checkout"
+        data-testid="checkout-page-title"
+      />
 
       <div
         className="hidden h-full w-1/2 bg-white lg:block"
@@ -411,6 +415,7 @@ const CheckoutPage = () => {
             <h2
               id="summary-heading"
               className="text-lg font-medium text-gray-900"
+              data-testid="order-summary-heading"
             >
               Order summary
             </h2>
@@ -418,11 +423,13 @@ const CheckoutPage = () => {
             <ul
               role="list"
               className="divide-y divide-gray-200 text-sm font-medium text-gray-900"
+              data-testid="order-items-list"
             >
               {products.map((product) => (
                 <li
                   key={product?.id}
                   className="flex items-start space-x-4 py-6"
+                  data-testid={`order-item-${product?.id}`}
                 >
                   <Image
                     src={
@@ -434,32 +441,58 @@ const CheckoutPage = () => {
                     width={80}
                     height={80}
                     className="h-20 w-20 flex-none rounded-md object-cover object-center"
+                    data-testid={`order-item-image-${product?.id}`}
                   />
                   <div className="flex-auto space-y-1">
-                    <h3>{product?.title}</h3>
-                    <p className="text-gray-500">x{product?.amount}</p>
+                    <h3 data-testid={`order-item-title-${product?.id}`}>
+                      {product?.title}
+                    </h3>
+                    <p
+                      className="text-gray-500"
+                      data-testid={`order-item-quantity-${product?.id}`}
+                    >
+                      x{product?.amount}
+                    </p>
                   </div>
-                  <p className="flex-none text-base font-medium">
+                  <p
+                    className="flex-none text-base font-medium"
+                    data-testid={`order-item-price-${product?.id}`}
+                  >
                     ${product?.price}
                   </p>
                 </li>
               ))}
             </ul>
 
-            <dl className="hidden space-y-6 border-t border-gray-200 pt-6 text-sm font-medium text-gray-900 lg:block">
-              <div className="flex items-center justify-between">
+            <dl
+              className="hidden space-y-6 border-t border-gray-200 pt-6 text-sm font-medium text-gray-900 lg:block"
+              data-testid="order-summary-details"
+            >
+              <div
+                className="flex items-center justify-between"
+                data-testid="order-subtotal"
+              >
                 <dt className="text-gray-600">Subtotal</dt>
                 <dd>${total}</dd>
               </div>
-              <div className="flex items-center justify-between">
+              <div
+                className="flex items-center justify-between"
+                data-testid="order-shipping"
+              >
                 <dt className="text-gray-600">Shipping</dt>
                 <dd>$5</dd>
               </div>
-              <div className="flex items-center justify-between">
+              <div
+                className="flex items-center justify-between"
+                data-testid="order-taxes"
+              >
                 <dt className="text-gray-600">Taxes</dt>
                 <dd>${total / 5}</dd>
               </div>
-              <div className="flex items-center justify-between border-t border-gray-200 pt-6">
+              <div
+                className="flex items-center justify-between border-t border-gray-200 pt-6"
+                data-testid="order-total"
+              >
                 <dt className="text-base">Total</dt>
                 <dd className="text-base">
                   ${total === 0 ? 0 : Math.round(total + total / 5 + 5)}
@@ -469,13 +502,17 @@ const CheckoutPage = () => {
           </div>
         </section>
 
-        <form className="px-4 pt-16 sm:px-6 lg:col-start-1 lg:row-start-1 lg:px-0">
+        <form
+          className="px-4 pt-16 sm:px-6 lg:col-start-1 lg:row-start-1 lg:px-0"
+          data-testid="checkout-form"
+        >
           <div className="mx-auto max-w-lg lg:max-w-none">
             {/* Contact Information */}
             <section aria-labelledby="contact-info-heading">
               <h2
                 id="contact-info-heading"
                 className="text-lg font-medium text-gray-900"
+                data-testid="contact-info-heading"
               >
                 Contact information
               </h2>
@@ -503,6 +540,7 @@ const CheckoutPage = () => {
                     required
                     disabled={isSubmitting}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    data-testid="checkout-name-input"
                   />
                 </div>
               </div>
@@ -530,6 +568,7 @@ const CheckoutPage = () => {
                     required
                     disabled={isSubmitting}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    data-testid="checkout-lastname-input"
                   />
                 </div>
               </div>
@@ -557,6 +596,7 @@ const CheckoutPage = () => {
                     required
                     disabled={isSubmitting}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    data-testid="checkout-phone-input"
                   />
                 </div>
               </div>
@@ -584,6 +624,7 @@ const CheckoutPage = () => {
                     required
                     disabled={isSubmitting}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    data-testid="checkout-email-input"
                   />
                 </div>
               </div>
@@ -591,7 +632,10 @@ const CheckoutPage = () => {
 
             {/* Payment Notice */}
             <section className="mt-10">
-              <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+              <div
+                className="bg-blue-50 border border-blue-200 rounded-md p-4"
+                data-testid="payment-notice-section"
+              >
                 <div className="flex">
                   <div className="flex-shrink-0">
                     <svg
@@ -626,6 +670,7 @@ const CheckoutPage = () => {
               <h2
                 id="shipping-heading"
                 className="text-lg font-medium text-gray-900"
+                data-testid="shipping-address-heading"
               >
                 Shipping address
               </h2>
@@ -653,6 +698,7 @@ const CheckoutPage = () => {
                           company: e.target.value,
                         })
                       }
+                      data-testid="checkout-company-input"
                     />
                   </div>
                 </div>
@@ -680,6 +726,7 @@ const CheckoutPage = () => {
                           adress: e.target.value,
                         })
                       }
+                      data-testid="checkout-address-input"
                     />
                   </div>
                 </div>
@@ -706,6 +753,7 @@ const CheckoutPage = () => {
                           apartment: e.target.value,
                         })
                       }
+                      data-testid="checkout-apartment-input"
                     />
                   </div>
                 </div>
@@ -733,6 +781,7 @@ const CheckoutPage = () => {
                           city: e.target.value,
                         })
                       }
+                      data-testid="checkout-city-input"
                     />
                   </div>
                 </div>
@@ -760,6 +809,7 @@ const CheckoutPage = () => {
                           country: e.target.value,
                         })
                       }
+                      data-testid="checkout-country-input"
                     />
                   </div>
                 </div>
@@ -787,6 +837,7 @@ const CheckoutPage = () => {
                           postalCode: e.target.value,
                         })
                       }
+                      data-testid="checkout-postal-code-input"
                     />
                   </div>
                 </div>
@@ -812,6 +863,7 @@ const CheckoutPage = () => {
                           orderNotice: e.target.value,
                         })
                       }
+                      data-testid="checkout-order-notice-input"
                     ></textarea>
                   </div>
                 </div>
@@ -824,6 +876,7 @@ const CheckoutPage = () => {
                 onClick={makePurchase}
                 disabled={isSubmitting}
                 className="w-full rounded-md border border-transparent bg-blue-500 px-20 py-2 text-lg font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-gray-50 sm:order-last disabled:bg-gray-400 disabled:cursor-not-allowed"
+                data-testid="checkout-place-order-button"
               >
                 {isSubmitting ? "Processing Order..." : "Place Order"}
               </button>

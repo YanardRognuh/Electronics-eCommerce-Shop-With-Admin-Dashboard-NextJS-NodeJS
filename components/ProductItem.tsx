@@ -1,29 +1,30 @@
-// *********************
-// Role of the component: Product item component 
-// Name of the component: ProductItem.tsx
-// Developer: Aleksandar Kuzmanovic
-// Version: 1.0
-// Component call: <ProductItem product={product} color={color} />
-// Input parameters: { product: Product; color: string; }
-// Output: Product item component that contains product image, title, link to the single product page, price, button...
-// *********************
-
+// ProductItem.tsx
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
 
 import { sanitize } from "@/lib/sanitize";
 
+interface ProductItemProps {
+  product: Product;
+  color: string;
+  "data-testid"?: string;
+}
+
 const ProductItem = ({
   product,
   color,
-}: {
-  product: Product;
-  color: string;
-}) => {
+  "data-testid": testId,
+}: ProductItemProps) => {
   return (
-    <div className="flex flex-col items-center gap-y-2">
-      <Link href={`/product/${product.slug}`}>
+    <div
+      className="flex flex-col items-center gap-y-2"
+      data-testid={testId || `product-item-${product.id}`}
+    >
+      <Link
+        href={`/product/${product.slug}`}
+        data-testid={`product-image-link-${product.id}`}
+      >
         <Image
           src={
             product.mainImage
@@ -35,6 +36,7 @@ const ProductItem = ({
           sizes="100vw"
           className="w-auto h-[300px]"
           alt={sanitize(product?.title) || "Product image"}
+          data-testid={`product-image-${product.id}`}
         />
       </Link>
       <Link
@@ -44,6 +46,7 @@ const ProductItem = ({
             ? `text-xl text-black font-normal mt-2 uppercase`
             : `text-xl text-white font-normal mt-2 uppercase`
         }
+        data-testid={`product-title-link-${product.id}`}
       >
         {sanitize(product.title)}
       </Link>
@@ -53,14 +56,15 @@ const ProductItem = ({
             ? "text-lg text-black font-semibold"
             : "text-lg text-white font-semibold"
         }
+        data-testid={`product-price-${product.id}`}
       >
         ${product.price}
       </p>
 
-  
       <Link
         href={`/product/${product?.slug}`}
         className="block flex justify-center items-center w-full uppercase bg-white px-0 py-2 text-base border border-black border-gray-300 font-bold text-blue-600 shadow-sm hover:bg-black hover:bg-gray-100 focus:outline-none focus:ring-2"
+        data-testid={`view-product-link-${product.id}`}
       >
         <p>View product</p>
       </Link>

@@ -39,7 +39,11 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
   }
 
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
+    <div
+      className={`relative ${className}`}
+      ref={dropdownRef}
+      data-testid="admin-notification-bell-component"
+    >
       {/* Notification Bell Button */}
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}

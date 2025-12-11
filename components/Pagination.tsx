@@ -16,19 +16,27 @@ const Pagination = () => {
   // getting from Zustand store current page and methods for incrementing and decrementing current page
   const { page, incrementPage, decrementPage } = usePaginationStore();
   return (
-    <div className="join flex justify-center py-16">
+    <div
+      className="join flex justify-center py-16"
+      data-testid="pagination-container"
+    >
       <button
         className="join-item btn btn-lg bg-blue-500 text-white hover:bg-white hover:text-blue-500"
         onClick={() => decrementPage()}
+        data-testid="pagination-previous-button"
       >
         «
       </button>
-      <button className="join-item btn btn-lg bg-blue-500 text-white hover:bg-white hover:text-blue-500">
+      <button
+        className="join-item btn btn-lg bg-blue-500 text-white hover:bg-white hover:text-blue-500"
+        data-testid="pagination-current-page-button"
+      >
         Page {page}
       </button>
       <button
         className="join-item btn btn-lg bg-blue-500 text-white hover:bg-white hover:text-blue-500"
         onClick={() => incrementPage()}
+        data-testid="pagination-next-button"
       >
         »
       </button>

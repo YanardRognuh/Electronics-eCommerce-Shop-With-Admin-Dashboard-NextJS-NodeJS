@@ -1,0 +1,49 @@
+{
+  "users": {
+    "admin": {
+      "email": "admin@singitronic.com",
+      "password": "admin123",
+      "name": "Admin User"
+    },
+    "regularUser": {
+      "email": "user@example.com",
+      "password": "password123",
+      "name": "Regular User"
+    },
+    "newUser": {
+      "name": "New Test User",
+      "email": "newuser@test.com",
+      "password": "Test123!"
+    }
+  },
+  "products": {
+    "sample1": {
+      "name": "Samsung Galaxy S23",
+      "description": "Latest Samsung flagship phone with advanced features",
+      "price": 12000000,
+      "stock": 50,
+      "categoryId": 1,
+      "merchantId": 1
+    },
+    "sample2": {
+      "name": "Dell XPS 15 Laptop",
+      "description": "High-performance laptop for professionals",
+      "price": 25000000,
+      "stock": 20,
+      "categoryId": 2,
+      "merchantId": 1
+    }
+  },
+  "categories": {
+    "electronics": {
+      "name": "Electronics",
+      "description": "Electronic devices and gadgets"
+    },
+    "laptops": {
+      "name": "Laptops",
+      "description": "Portable computers"
+    }
+  },
+  "searchKeywords": ["laptop", "phone", "samsung", "iphone", "macbook"],
+  "invalidSearchKeywords": ["xyznotfound123", "invalidproduct999"]
+}

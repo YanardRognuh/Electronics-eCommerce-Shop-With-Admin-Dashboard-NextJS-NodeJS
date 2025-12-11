@@ -97,7 +97,11 @@ const RegisterPage = () => {
   }
   return (
     <div className="bg-white">
-      <SectionTitle title="Register" path="Home | Register" />
+      <SectionTitle
+        title="Register"
+        path="Home | Register"
+        data-testid="register-page-title"
+      />
       <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8 bg-white">
         <div className="flex justify-center flex-col items-center">
           <h2 className="mt-6 text-center text-2xl leading-9 tracking-tight text-gray-900">
@@ -105,9 +109,16 @@ const RegisterPage = () => {
           </h2>
         </div>
 
-        <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-[480px]">
+        <div
+          className="mt-5 sm:mx-auto sm:w-full sm:max-w-[480px]"
+          data-testid="register-container"
+        >
           <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form
+              className="space-y-6"
+              onSubmit={handleSubmit}
+              data-testid="register-form"
+            >
               <div>
                 <label
                   htmlFor="name"
@@ -122,6 +133,7 @@ const RegisterPage = () => {
                     type="text"
                     required
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    data-testid="register-name-input"
                   />
                 </div>
               </div>
@@ -140,6 +152,7 @@ const RegisterPage = () => {
                     type="text"
                     required
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    data-testid="register-lastname-input"
                   />
                 </div>
               </div>
@@ -159,6 +172,7 @@ const RegisterPage = () => {
                     autoComplete="email"
                     required
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    data-testid="register-email-input"
                   />
                 </div>
               </div>
@@ -178,6 +192,7 @@ const RegisterPage = () => {
                     autoComplete="current-password"
                     required
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    data-testid="register-password-input"
                   />
                 </div>
               </div>
@@ -197,6 +212,7 @@ const RegisterPage = () => {
                     autoComplete="current-password"
                     required
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    data-testid="register-confirm-password-input"
                   />
                 </div>
               </div>
@@ -208,6 +224,7 @@ const RegisterPage = () => {
                     name="remember-me"
                     type="checkbox"
                     className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+                    data-testid="register-terms-checkbox"
                   />
                   <label
                     htmlFor="remember-me"
@@ -226,9 +243,13 @@ const RegisterPage = () => {
                   paddingY={1.5}
                   customWidth="full"
                   textSize="sm"
+                  data-testid="register-submit-button"
                 />
 
-                <p className="text-red-600 text-center text-[16px] my-4">
+                <p
+                  className="text-red-600 text-center text-[16px] my-4"
+                  data-testid="register-error-message"
+                >
                   {error && error}
                 </p>
               </div>

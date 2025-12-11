@@ -84,7 +84,7 @@ const AddNewProduct = () => {
       const data: Merchant[] = await res.json();
       setMerchants(data || []);
       setProduct((prev) => ({
-      ...prev,
+        ...prev,
         merchantId: prev.merchantId || data?.[0]?.id || "",
       }));
     } catch (e) {
@@ -140,14 +140,24 @@ const AddNewProduct = () => {
   }, []);
 
   return (
-    <div className="bg-white flex justify-start max-w-screen-2xl mx-auto xl:h-full max-xl:flex-col max-xl:gap-y-5">
-      <DashboardSidebar />
+    <div
+      className="bg-white flex justify-start max-w-screen-2xl mx-auto xl:h-full max-xl:flex-col max-xl:gap-y-5"
+      data-testid="add-new-product-container"
+    >
+      <DashboardSidebar data-testid="dashboard-sidebar" />
       <div className="flex flex-col gap-y-7 xl:ml-5 max-xl:px-5 w-full">
-        <h1 className="text-3xl font-semibold">Add new product</h1>
-        <div>
+        <h1
+          className="text-3xl font-semibold"
+          data-testid="add-new-product-title"
+        >
+          Add new product
+        </h1>
+        <div data-testid="merchant-select-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Merchant Info:</span>
+              <span className="label-text" data-testid="merchant-label">
+                Merchant Info:
+              </span>
             </div>
             <select
               className="select select-bordered"
@@ -155,25 +165,35 @@ const AddNewProduct = () => {
               onChange={(e) =>
                 setProduct({ ...product, merchantId: e.target.value })
               }
+              data-testid="merchant-select"
             >
               {merchants.map((merchant) => (
-                <option key={merchant.id} value={merchant.id}>
+                <option
+                  key={merchant.id}
+                  value={merchant.id}
+                  data-testid={`merchant-option-${merchant.id}`}
+                >
                   {merchant.name}
                 </option>
               ))}
             </select>
             {merchants.length === 0 && (
-              <span className="text-xs text-red-500 mt-1">
+              <span
+                className="text-xs text-red-500 mt-1"
+                data-testid="no-merchants-warning"
+              >
                 Please create a merchant first.
               </span>
             )}
           </label>
         </div>
 
-        <div>
+        <div data-testid="product-name-input-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Product name:</span>
+              <span className="label-text" data-testid="product-name-label">
+                Product name:
+              </span>
             </div>
             <input
               type="text"
@@ -182,14 +202,17 @@ const AddNewProduct = () => {
               onChange={(e) =>
                 setProduct({ ...product, title: e.target.value })
               }
+              data-testid="product-name-input"
             />
           </label>
         </div>
 
-        <div>
+        <div data-testid="product-slug-input-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Product slug:</span>
+              <span className="label-text" data-testid="product-slug-label">
+                Product slug:
+              </span>
             </div>
             <input
               type="text"
@@ -201,14 +224,17 @@ const AddNewProduct = () => {
                   slug: convertSlugToURLFriendly(e.target.value),
                 })
               }
+              data-testid="product-slug-input"
             />
           </label>
         </div>
 
-        <div>
+        <div data-testid="product-category-select-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Category:</span>
+              <span className="label-text" data-testid="product-category-label">
+                Category:
+              </span>
             </div>
             <select
               className="select select-bordered"
@@ -216,10 +242,15 @@ const AddNewProduct = () => {
               onChange={(e) =>
                 setProduct({ ...product, categoryId: e.target.value })
               }
+              data-testid="product-category-select"
             >
               {categories &&
                 categories.map((category: any) => (
-                  <option key={category?.id} value={category?.id}>
+                  <option
+                    key={category?.id}
+                    value={category?.id}
+                    data-testid={`category-option-${category?.id}`}
+                  >
                     {category?.name}
                   </option>
                 ))}
@@ -227,10 +258,12 @@ const AddNewProduct = () => {
           </label>
         </div>
 
-        <div>
+        <div data-testid="product-price-input-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Product price:</span>
+              <span className="label-text" data-testid="product-price-label">
+                Product price:
+              </span>
             </div>
             <input
               type="text"
@@ -239,13 +272,19 @@ const AddNewProduct = () => {
               onChange={(e) =>
                 setProduct({ ...product, price: Number(e.target.value) })
               }
+              data-testid="product-price-input"
             />
           </label>
         </div>
-        <div>
+        <div data-testid="product-manufacturer-input-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Manufacturer:</span>
+              <span
+                className="label-text"
+                data-testid="product-manufacturer-label"
+              >
+                Manufacturer:
+              </span>
             </div>
             <input
               type="text"
@@ -254,13 +293,16 @@ const AddNewProduct = () => {
               onChange={(e) =>
                 setProduct({ ...product, manufacturer: e.target.value })
               }
+              data-testid="product-manufacturer-input"
             />
           </label>
         </div>
-        <div>
+        <div data-testid="product-instock-select-container">
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Is product in stock?</span>
+              <span className="label-text" data-testid="product-instock-label">
+                Is product in stock?
+              </span>
             </div>
             <select
               className="select select-bordered"
@@ -268,13 +310,18 @@ const AddNewProduct = () => {
               onChange={(e) =>
                 setProduct({ ...product, inStock: Number(e.target.value) })
               }
+              data-testid="product-instock-select"
             >
-              <option value={1}>Yes</option>
-              <option value={0}>No</option>
+              <option value={1} data-testid="instock-option-yes">
+                Yes
+              </option>
+              <option value={0} data-testid="instock-option-no">
+                No
+              </option>
             </select>
           </label>
         </div>
-        <div>
+        <div data-testid="main-image-upload-container">
           <input
             type="file"
             className="file-input file-input-bordered file-input-lg w-full max-w-sm"
@@ -282,6 +329,7 @@ const AddNewProduct = () => {
               uploadFile(e.target.files[0]);
               setProduct({ ...product, mainImage: e.target.files[0].name });
             }}
+            data-testid="main-image-upload-input"
           />
           {product?.mainImage && (
             <Image
@@ -290,13 +338,19 @@ const AddNewProduct = () => {
               className="w-auto h-auto"
               width={100}
               height={100}
+              data-testid="main-image-preview"
             />
           )}
         </div>
-        <div>
+        <div data-testid="product-description-input-container">
           <label className="form-control">
             <div className="label">
-              <span className="label-text">Product description:</span>
+              <span
+                className="label-text"
+                data-testid="product-description-label"
+              >
+                Product description:
+              </span>
             </div>
             <textarea
               className="textarea textarea-bordered h-24"
@@ -304,14 +358,19 @@ const AddNewProduct = () => {
               onChange={(e) =>
                 setProduct({ ...product, description: e.target.value })
               }
+              data-testid="product-description-textarea"
             ></textarea>
           </label>
         </div>
-        <div className="flex gap-x-2">
+        <div
+          className="flex gap-x-2"
+          data-testid="add-product-button-container"
+        >
           <button
             onClick={addProduct}
             type="button"
             className="uppercase bg-blue-500 px-10 py-5 text-lg border border-black border-gray-300 font-bold text-white shadow-sm hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2"
+            data-testid="add-product-button"
           >
             Add product
           </button>

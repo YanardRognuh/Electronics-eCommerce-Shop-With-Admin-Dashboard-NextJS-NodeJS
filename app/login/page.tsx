@@ -66,7 +66,11 @@ const LoginPage = () => {
   }
   return (
     <div className="bg-white">
-      <SectionTitle title="Login" path="Home | Login" />
+      <SectionTitle
+        title="Login"
+        path="Home | Login"
+        data-testid="login-page-title"
+      />
       <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8 bg-white">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <h2 className="mt-6 text-center text-2xl font-normal leading-9 tracking-tight text-gray-900">
@@ -76,7 +80,11 @@ const LoginPage = () => {
 
         <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-[480px]">
           <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form
+              className="space-y-6"
+              onSubmit={handleSubmit}
+              data-testid="login-form"
+            >
               <div>
                 <label
                   htmlFor="email"
@@ -92,6 +100,7 @@ const LoginPage = () => {
                     autoComplete="email"
                     required
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    data-testid="login-email-input"
                   />
                 </div>
               </div>
@@ -111,6 +120,7 @@ const LoginPage = () => {
                     autoComplete="current-password"
                     required
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    data-testid="login-password-input"
                   />
                 </div>
               </div>
@@ -122,6 +132,7 @@ const LoginPage = () => {
                     name="remember-me"
                     type="checkbox"
                     className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+                    data-testid="remember-me-checkbox"
                   />
                   <label
                     htmlFor="remember-me"
@@ -135,6 +146,7 @@ const LoginPage = () => {
                   <a
                     href="#"
                     className="font-semibold text-black hover:text-black"
+                    data-testid="forgot-password-link"
                   >
                     Forgot password?
                   </a>
@@ -149,6 +161,7 @@ const LoginPage = () => {
                   paddingY={1.5}
                   customWidth="full"
                   textSize="sm"
+                  data-testid="login-submit-button"
                 />
               </div>
             </form>
@@ -174,6 +187,7 @@ const LoginPage = () => {
                   onClick={() => {
                     signIn("google");
                   }}
+                  data-testid="google-login-button"
                 >
                   <FcGoogle />
                   <span className="text-sm font-semibold leading-6">
@@ -186,6 +200,7 @@ const LoginPage = () => {
                   onClick={() => {
                     signIn("github");
                   }}
+                  data-testid="github-login-button"
                 >
                   <svg
                     className="h-5 w-5"
@@ -204,7 +219,10 @@ const LoginPage = () => {
                   </span>
                 </button>
               </div>
-              <p className="text-red-600 text-center text-[16px] my-4">
+              <p
+                className="text-red-600 text-center text-[16px] my-4"
+                data-testid="login-error-message"
+              >
                 {error && error}
               </p>
             </div>
