@@ -64,3 +64,5 @@
 ::1 - - [10/Dec/2025:00:31:06 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=IUdtgjrS userId=anonymous
 ::1 - - [10/Dec/2025:00:31:06 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=R6QdCHmR userId=anonymous
 ::1 - - [10/Dec/2025:00:31:06 +0000] "GET /api/products?mode=admin HTTP/1.1" 500 97 "-" "node" reqId=J_7BRVg0 userId=anonymous
+::1 - - [11/Dec/2025:02:07:21 +0000] "GET /api/users/email/admin@example.com HTTP/1.1" 500 106 "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" reqId=P5BbRgwL userId=anonymous
+::1 - - [11/Dec/2025:02:08:21 +0000] "GET /api/users/email/admin@example.com HTTP/1.1" 500 106 "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" reqId=xoa9YWUc userId=anonymous

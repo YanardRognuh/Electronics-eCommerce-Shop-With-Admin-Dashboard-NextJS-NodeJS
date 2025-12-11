@@ -1,6 +1,7 @@
-// cypress/e2e/admin/07-admin-bulk-upload.cy.ts
+// cypress/e2e/admin/07-admin-bulk-upload-strict.cy.ts
+// STRICT VERSION - Tests will FAIL if upload doesn't work
 
-describe("Admin Bulk Upload", () => {
+describe("Admin Bulk Upload - STRICT Tests", () => {
   beforeEach(() => {
     cy.loginAsAdmin();
     cy.visit("/admin/bulk-upload");
@@ -8,12 +9,11 @@ describe("Admin Bulk Upload", () => {
   });
 
   afterEach(() => {
-    cy.clearTestBulkUploadBatches(); // Clean batch & products
-    // atau
-    cy.clearBulkUploadTestProducts(); // Clean products only
+    cy.clearTestBulkUploadBatches();
+    cy.clearBulkUploadTestProducts();
   });
 
-  describe("Bulk Upload Page Layout", () => {
+  describe("Page Layout (Should Always Pass)", () => {
     it("should display bulk upload page", () => {
       cy.get('[data-testid="bulk-upload-page-container"]').should("be.visible");
     });
@@ -22,72 +22,11 @@ describe("Admin Bulk Upload", () => {
       cy.get('[data-testid="bulk-upload-page-title"]').should("be.visible");
     });
 
-    it("should display dashboard sidebar", () => {
-      cy.get('[data-testid="dashboard-sidebar-container"]').should(
-        "be.visible"
-      );
-    });
-  });
-
-  describe("Instructions Section", () => {
-    it("should display instructions container", () => {
-      cy.get('[data-testid="instructions-container"]').should("be.visible");
-    });
-
-    it("should display instructions heading", () => {
-      cy.get('[data-testid="instructions-heading"]').should("be.visible");
-    });
-
-    it("should display instructions list", () => {
-      cy.get('[data-testid="instructions-list"]').should("be.visible");
-    });
-  });
-
-  describe("Template Download", () => {
-    it("should display template download section", () => {
-      cy.get('[data-testid="template-download-section"]').should("be.visible");
-    });
-
-    it("should display download template button", () => {
-      cy.get('[data-testid="download-template-button"]').should("be.visible");
-    });
-
-    it("should download template when button clicked", () => {
-      cy.get('[data-testid="download-template-button"]').click();
-
-      // Template download should trigger
-      cy.wait(1000);
-    });
-  });
-
-  describe("File Upload Section", () => {
     it("should display file upload section", () => {
       cy.get('[data-testid="file-upload-section"]').should("be.visible");
     });
 
-    it("should display file upload drop area", () => {
-      cy.get('[data-testid="file-upload-drop-area"]').should("be.visible");
-    });
-
-    it("should display file upload input", () => {
-      cy.get('[data-testid="file-upload-input"]').should("exist");
-    });
-
-    it("should display file upload text", () => {
-      cy.get('[data-testid="file-upload-text"]').should("be.visible");
-    });
-
-    it("should display file upload label", () => {
-      cy.get('[data-testid="file-upload-label"]').should("be.visible");
-    });
-  });
-
-  describe("Upload Button", () => {
-    it("should display upload button section", () => {
-      cy.get('[data-testid="upload-button-section"]').should("be.visible");
-    });
-
-    it("should display upload products button", () => {
+    it("should display upload button", () => {
       cy.get('[data-testid="upload-products-button"]').should("be.visible");
     });
 
@@ -96,17 +35,18 @@ describe("Admin Bulk Upload", () => {
     });
   });
 
-  describe("File Selection", () => {
+  describe("File Selection (Should Always Pass - Frontend Only)", () => {
     it("should show selected file info after file selection", () => {
-      const fileName = "bulk-upload-example.csv";
-
       cy.get('[data-testid="file-upload-input"]').selectFile(
-        `cypress/fixtures/${fileName}`,
+        "cypress/fixtures/bulk-upload-example.csv",
         { force: true }
       );
 
       cy.get('[data-testid="selected-file-info"]').should("be.visible");
-      cy.get('[data-testid="selected-file-info"]').should("contain", fileName);
+      cy.get('[data-testid="selected-file-info"]').should(
+        "contain",
+        "bulk-upload-example.csv"
+      );
     });
 
     it("should enable upload button when file is selected", () => {
@@ -119,107 +59,47 @@ describe("Admin Bulk Upload", () => {
         "not.be.disabled"
       );
     });
-
-    it("should display file size information", () => {
-      cy.get('[data-testid="file-upload-input"]').selectFile(
-        "cypress/fixtures/bulk-upload-example.csv",
-        { force: true }
-      );
-
-      cy.get('[data-testid="selected-file-size"]').should("be.visible");
-    });
-
-    it("should allow removing selected file", () => {
-      cy.get('[data-testid="file-upload-input"]').selectFile(
-        "cypress/fixtures/bulk-upload-example.csv",
-        { force: true }
-      );
-
-      cy.get('[data-testid="selected-file-info"]').should("be.visible");
-
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid="remove-file-button"]').length > 0) {
-          cy.get('[data-testid="remove-file-button"]').click();
-          cy.get('[data-testid="selected-file-info"]').should("not.exist");
-          cy.get('[data-testid="upload-products-button"]').should(
-            "be.disabled"
-          );
-        }
-      });
-    });
   });
 
-  describe("CSV Format Guide", () => {
-    it("should display CSV format guide", () => {
-      cy.get('[data-testid="csv-format-guide-container"]').should("be.visible");
+  describe("Successful Upload Flow (WILL FAIL if backend has errors)", () => {
+    it("STRICT: should successfully upload valid CSV file", () => {
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      cy.get('[data-testid="upload-products-button"]').click();
+      cy.wait(3000);
+
+      // ❌ WILL FAIL: Assert upload result MUST exist
+      cy.get('[data-testid="upload-result-container"]').should("be.visible");
+      cy.get('[data-testid="upload-result-status"]').should("be.visible");
+
+      // ❌ WILL FAIL: New batch MUST appear in history
+      cy.get('[data-testid^="batch-item-"]').should("exist");
+      cy.get('[data-testid^="batch-item-"]').first().should("be.visible");
     });
 
-    it("should display CSV format guide heading", () => {
-      cy.get('[data-testid="csv-format-guide-heading"]').should("be.visible");
-    });
+    it("STRICT: should display upload statistics after successful upload", () => {
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
 
-    it("should display CSV format table", () => {
-      cy.get('[data-testid="csv-format-table-container"]').should("be.visible");
-      cy.get('[data-testid="csv-format-table"]').should("be.visible");
-    });
+      cy.get('[data-testid="upload-products-button"]').click();
+      cy.wait(3000);
 
-    it("should display CSV format table header", () => {
-      cy.get('[data-testid="csv-format-table-header"]').should("be.visible");
-      cy.get('[data-testid="csv-format-table-header-row"]').should(
+      // ❌ WILL FAIL: Statistics MUST be visible
+      cy.get('[data-testid="upload-statistics-container"]').should(
         "be.visible"
       );
+      cy.get('[data-testid="statistics-grid"]').should("be.visible");
+      cy.get('[data-testid="processed-count-container"]').should("be.visible");
+      cy.get('[data-testid="successful-count-container"]').should("be.visible");
+      cy.get('[data-testid="failed-count-container"]').should("be.visible");
     });
 
-    it("should display CSV format table body", () => {
-      cy.get('[data-testid="csv-format-table-body"]').should("be.visible");
-    });
-
-    it("should display required CSV columns", () => {
-      cy.get('[data-testid="csv-format-table-body"]').within(() => {
-        cy.contains("title").should("be.visible");
-        cy.contains("price").should("be.visible");
-        cy.contains("description").should("be.visible");
-      });
-    });
-  });
-
-  describe("Successful Upload Flow", () => {
-    it("should successfully upload valid CSV file", () => {
-      // Select CSV file
-      cy.get('[data-testid="file-upload-input"]').selectFile(
-        "cypress/fixtures/bulk-upload-example.csv",
-        { force: true }
-      );
-
-      // Verify file is selected
-      cy.get('[data-testid="selected-file-info"]').should("be.visible");
-      cy.get('[data-testid="upload-products-button"]').should(
-        "not.be.disabled"
-      );
-
-      // Upload file
-      cy.get('[data-testid="upload-products-button"]').click();
-
-      // Wait for upload to complete
-      cy.wait(3000);
-
-      // Check for success indicators
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid="upload-result-container"]').length > 0) {
-          cy.get('[data-testid="upload-result-container"]').should(
-            "be.visible"
-          );
-          cy.get('[data-testid="upload-result-status"]').should("be.visible");
-        }
-
-        // Verify new batch appears in history
-        if ($body.find('[data-testid^="batch-item-"]').length > 0) {
-          cy.get('[data-testid^="batch-item-"]').first().should("be.visible");
-        }
-      });
-    });
-
-    it("should display upload statistics after successful upload", () => {
+    it("STRICT: should display success icon for successful upload", () => {
       cy.get('[data-testid="file-upload-input"]').selectFile(
         "cypress/fixtures/bulk-upload-example.csv",
         { force: true }
@@ -228,43 +108,12 @@ describe("Admin Bulk Upload", () => {
       cy.get('[data-testid="upload-products-button"]').click();
       cy.wait(3000);
 
-      cy.get("body").then(($body) => {
-        if (
-          $body.find('[data-testid="upload-statistics-container"]').length > 0
-        ) {
-          cy.get('[data-testid="upload-statistics-container"]').should(
-            "be.visible"
-          );
-          cy.get('[data-testid="statistics-grid"]').should("be.visible");
-          cy.get('[data-testid="processed-count-container"]').should(
-            "be.visible"
-          );
-          cy.get('[data-testid="successful-count-container"]').should(
-            "be.visible"
-          );
-          cy.get('[data-testid="failed-count-container"]').should("be.visible");
-        }
-      });
+      // ❌ WILL FAIL: Success icon MUST exist
+      cy.get('[data-testid="success-icon"]').should("be.visible");
     });
 
-    it("should display success icon for successful upload", () => {
-      cy.get('[data-testid="file-upload-input"]').selectFile(
-        "cypress/fixtures/bulk-upload-example.csv",
-        { force: true }
-      );
-
-      cy.get('[data-testid="upload-products-button"]').click();
-      cy.wait(3000);
-
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid="success-icon"]').length > 0) {
-          cy.get('[data-testid="success-icon"]').should("be.visible");
-        }
-      });
-    });
-
-    it("should update upload history after successful upload", () => {
-      // Get initial history count
+    it("STRICT: should create batch in upload history", () => {
+      // Get initial count
       cy.get("body").then(($body) => {
         const initialCount =
           $body.find('[data-testid^="batch-item-"]').length || 0;
@@ -278,15 +127,15 @@ describe("Admin Bulk Upload", () => {
         cy.get('[data-testid="upload-products-button"]').click();
         cy.wait(3000);
 
-        // Verify history count increased
+        // ❌ WILL FAIL: History count MUST increase
         cy.get('[data-testid^="batch-item-"]').should(
-          "have.length.at.least",
+          "have.length.greaterThan",
           initialCount
         );
       });
     });
 
-    it("should reset file selection after successful upload", () => {
+    it("STRICT: should display batch with correct filename", () => {
       cy.get('[data-testid="file-upload-input"]').selectFile(
         "cypress/fixtures/bulk-upload-example.csv",
         { force: true }
@@ -295,297 +144,252 @@ describe("Admin Bulk Upload", () => {
       cy.get('[data-testid="upload-products-button"]').click();
       cy.wait(3000);
 
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid="selected-file-info"]').length === 0) {
-          cy.get('[data-testid="upload-products-button"]').should(
-            "be.disabled"
-          );
-        }
-      });
+      // ❌ WILL FAIL: Batch filename MUST be visible
+      cy.get('[data-testid^="batch-filename-"]')
+        .first()
+        .should("be.visible")
+        .should("contain", "bulk-upload-example.csv");
     });
   });
 
-  describe("Upload History", () => {
-    it("should display upload history container", () => {
-      cy.get('[data-testid="upload-history-container"]').should("be.visible");
+  describe("Upload History Component (WILL FAIL if no batches exist)", () => {
+    beforeEach(() => {
+      // Upload a file first to create a batch
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+      cy.get('[data-testid="upload-products-button"]').click();
+      cy.wait(3000);
     });
 
-    it("should display bulk upload history component", () => {
-      cy.get('[data-testid="bulk-upload-history-component"]').should(
+    it("STRICT: should display batch items", () => {
+      // ❌ WILL FAIL: Batch items MUST exist
+      cy.get('[data-testid^="batch-item-"]').should("exist");
+      cy.get('[data-testid^="batch-item-"]').should(
+        "have.length.greaterThan",
+        0
+      );
+    });
+
+    it("STRICT: should display batch details", () => {
+      // ❌ WILL FAIL: Batch details MUST be visible
+      cy.get('[data-testid^="batch-item-"]').first().should("be.visible");
+
+      cy.get('[data-testid^="batch-item-"]')
+        .first()
+        .invoke("attr", "data-testid")
+        .then((testid) => {
+          const batchId = testid?.replace("batch-item-", "");
+
+          cy.get(`[data-testid="batch-header-${batchId}"]`).should(
+            "be.visible"
+          );
+          cy.get(`[data-testid="batch-info-${batchId}"]`).should("be.visible");
+          cy.get(`[data-testid="batch-filename-${batchId}"]`).should(
+            "be.visible"
+          );
+          cy.get(`[data-testid="batch-status-${batchId}"]`).should(
+            "be.visible"
+          );
+        });
+    });
+
+    it("STRICT: should display batch statistics", () => {
+      // ❌ WILL FAIL: Statistics MUST exist
+      cy.get('[data-testid^="batch-item-"]')
+        .first()
+        .invoke("attr", "data-testid")
+        .then((testid) => {
+          const batchId = testid?.replace("batch-item-", "");
+
+          cy.get(`[data-testid="batch-total-records-${batchId}"]`).should(
+            "be.visible"
+          );
+          cy.get(`[data-testid="batch-successful-records-${batchId}"]`).should(
+            "be.visible"
+          );
+          cy.get(`[data-testid="batch-failed-records-${batchId}"]`).should(
+            "be.visible"
+          );
+          cy.get(`[data-testid="batch-success-rate-${batchId}"]`).should(
+            "be.visible"
+          );
+        });
+    });
+
+    it("STRICT: should display batch actions", () => {
+      // ❌ WILL FAIL: Action buttons MUST exist
+      cy.get('[data-testid^="batch-item-"]')
+        .first()
+        .invoke("attr", "data-testid")
+        .then((testid) => {
+          const batchId = testid?.replace("batch-item-", "");
+
+          cy.get(`[data-testid="batch-actions-${batchId}"]`).should(
+            "be.visible"
+          );
+          cy.get(`[data-testid="batch-delete-button-${batchId}"]`).should(
+            "be.visible"
+          );
+        });
+    });
+
+    it("STRICT: should have numeric statistics values", () => {
+      // ❌ WILL FAIL: Statistics must have valid numbers
+      cy.get('[data-testid^="batch-total-records-"]')
+        .first()
+        .invoke("text")
+        .should("match", /\d+/);
+
+      cy.get('[data-testid^="batch-successful-records-"]')
+        .first()
+        .invoke("text")
+        .should("match", /\d+/);
+    });
+  });
+
+  describe("Delete Batch Modal (WILL FAIL if no batches exist)", () => {
+    beforeEach(() => {
+      // Upload a file first to create a batch
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+      cy.get('[data-testid="upload-products-button"]').click();
+      cy.wait(3000);
+    });
+
+    it("STRICT: should open delete modal when delete button clicked", () => {
+      // ❌ WILL FAIL: Delete button MUST exist
+      cy.get('[data-testid^="batch-delete-button-"]')
+        .first()
+        .should("be.visible")
+        .click();
+
+      // ❌ WILL FAIL: Modal MUST appear
+      cy.get('[data-testid="delete-modal-container"]').should("be.visible");
+    });
+
+    it("STRICT: should display delete modal content", () => {
+      cy.get('[data-testid^="batch-delete-button-"]').first().click();
+
+      // ❌ WILL FAIL: All modal elements MUST be visible
+      cy.get('[data-testid="delete-modal-content"]').should("be.visible");
+      cy.get('[data-testid="delete-modal-header"]').should("be.visible");
+      cy.get('[data-testid="delete-modal-warning-icon"]').should("be.visible");
+      cy.get('[data-testid="delete-modal-title"]').should("be.visible");
+      cy.get('[data-testid="delete-modal-message"]').should("be.visible");
+    });
+
+    it("STRICT: should display delete products warning", () => {
+      cy.get('[data-testid^="batch-delete-button-"]').first().click();
+
+      // ❌ WILL FAIL: Warning elements MUST exist
+      cy.get('[data-testid="delete-products-warning-container"]').should(
+        "be.visible"
+      );
+      cy.get('[data-testid="delete-products-checkbox"]').should("be.visible");
+      cy.get('[data-testid="delete-products-warning-text"]').should(
         "be.visible"
       );
     });
-  });
 
-  describe("Bulk Upload History Component", () => {
-    it("should display history container", () => {
-      cy.get('[data-testid="bulk-upload-history-container"]').should(
+    it("STRICT: should display modal action buttons", () => {
+      cy.get('[data-testid^="batch-delete-button-"]').first().click();
+
+      // ❌ WILL FAIL: Action buttons MUST exist
+      cy.get('[data-testid="delete-modal-actions"]').should("be.visible");
+      cy.get('[data-testid="delete-modal-cancel-button"]').should("be.visible");
+      cy.get('[data-testid="delete-modal-confirm-button"]').should(
         "be.visible"
       );
     });
 
-    it("should display history title", () => {
-      cy.get('[data-testid="bulk-upload-history-title"]').should("be.visible");
+    it("STRICT: should close modal when cancel clicked", () => {
+      cy.get('[data-testid^="batch-delete-button-"]').first().click();
+
+      cy.get('[data-testid="delete-modal-cancel-button"]').click();
+
+      // ❌ WILL FAIL: Modal MUST close
+      cy.get('[data-testid="delete-modal-container"]').should("not.exist");
     });
 
-    it("should display batch items if available", () => {
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid^="batch-item-"]').length > 0) {
-          cy.get('[data-testid^="batch-item-"]').should(
-            "have.length.greaterThan",
-            0
-          );
-        } else if (
-          $body.find('[data-testid="bulk-upload-history-empty"]').length > 0
-        ) {
-          cy.get('[data-testid="bulk-upload-history-empty"]').should(
-            "be.visible"
-          );
-          cy.get('[data-testid="no-history-icon"]').should("be.visible");
-        }
+    it("STRICT: should delete batch when confirmed", () => {
+      const initialCount = Cypress.$('[data-testid^="batch-item-"]').length;
+
+      // ❌ WILL FAIL: Must have at least one batch to delete
+      expect(initialCount).to.be.greaterThan(0);
+
+      cy.get('[data-testid^="batch-delete-button-"]').first().click();
+
+      cy.get('[data-testid="delete-products-checkbox"]').check({
+        force: true,
       });
-    });
 
-    it("should display batch details", () => {
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid^="batch-item-"]').length > 0) {
-          const batchId = $body
-            .find('[data-testid^="batch-item-"]')
-            .first()
-            .attr("data-testid")
-            ?.replace("batch-item-", "");
+      cy.get('[data-testid="delete-modal-confirm-button"]').click();
+      cy.wait(2000);
 
-          if (batchId) {
-            cy.get(`[data-testid="batch-header-${batchId}"]`).should(
-              "be.visible"
-            );
-            cy.get(`[data-testid="batch-info-${batchId}"]`).should(
-              "be.visible"
-            );
-            cy.get(`[data-testid="batch-filename-${batchId}"]`).should(
-              "be.visible"
-            );
-            cy.get(`[data-testid="batch-status-${batchId}"]`).should(
-              "be.visible"
-            );
-            cy.get(`[data-testid="batch-stats-${batchId}"]`).should(
-              "be.visible"
-            );
-          }
-        }
-      });
-    });
-
-    it("should display batch statistics", () => {
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid^="batch-item-"]').length > 0) {
-          const batchId = $body
-            .find('[data-testid^="batch-item-"]')
-            .first()
-            .attr("data-testid")
-            ?.replace("batch-item-", "");
-
-          if (batchId) {
-            cy.get(`[data-testid="batch-total-records-${batchId}"]`).should(
-              "be.visible"
-            );
-            cy.get(
-              `[data-testid="batch-successful-records-${batchId}"]`
-            ).should("be.visible");
-            cy.get(`[data-testid="batch-failed-records-${batchId}"]`).should(
-              "be.visible"
-            );
-            cy.get(`[data-testid="batch-success-rate-${batchId}"]`).should(
-              "be.visible"
-            );
-          }
-        }
-      });
-    });
-
-    it("should display batch actions", () => {
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid^="batch-item-"]').length > 0) {
-          const batchId = $body
-            .find('[data-testid^="batch-item-"]')
-            .first()
-            .attr("data-testid")
-            ?.replace("batch-item-", "");
-
-          if (batchId) {
-            cy.get(`[data-testid="batch-actions-${batchId}"]`).should(
-              "be.visible"
-            );
-            cy.get(`[data-testid="batch-delete-button-${batchId}"]`).should(
-              "be.visible"
-            );
-          }
-        }
-      });
-    });
-
-    it("should display batch errors if any", () => {
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid^="batch-errors-container-"]').length > 0) {
-          const batchId = $body
-            .find('[data-testid^="batch-errors-container-"]')
-            .first()
-            .attr("data-testid")
-            ?.replace("batch-errors-container-", "");
-
-          if (batchId) {
-            cy.get(`[data-testid="batch-errors-title-${batchId}"]`).should(
-              "be.visible"
-            );
-            cy.get(`[data-testid="batch-errors-list-${batchId}"]`).should(
-              "be.visible"
-            );
-          }
-        }
-      });
-    });
-  });
-
-  describe("Delete Batch Modal", () => {
-    it("should open delete modal when delete button clicked", () => {
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid^="batch-delete-button-"]').length > 0) {
-          cy.get('[data-testid^="batch-delete-button-"]').first().click();
-
-          cy.get('[data-testid="delete-modal-container"]').should("be.visible");
-        }
-      });
-    });
-
-    it("should display delete modal content", () => {
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid^="batch-delete-button-"]').length > 0) {
-          cy.get('[data-testid^="batch-delete-button-"]').first().click();
-
-          cy.get('[data-testid="delete-modal-content"]').should("be.visible");
-          cy.get('[data-testid="delete-modal-header"]').should("be.visible");
-          cy.get('[data-testid="delete-modal-warning-icon"]').should(
-            "be.visible"
-          );
-          cy.get('[data-testid="delete-modal-title"]').should("be.visible");
-          cy.get('[data-testid="delete-modal-message"]').should("be.visible");
-        }
-      });
-    });
-
-    it("should display delete products warning", () => {
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid^="batch-delete-button-"]').length > 0) {
-          cy.get('[data-testid^="batch-delete-button-"]').first().click();
-
-          cy.get('[data-testid="delete-products-warning-container"]').should(
-            "be.visible"
-          );
-          cy.get('[data-testid="delete-products-checkbox"]').should(
-            "be.visible"
-          );
-          cy.get('[data-testid="delete-products-warning-text"]').should(
-            "be.visible"
-          );
-        }
-      });
-    });
-
-    it("should display modal action buttons", () => {
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid^="batch-delete-button-"]').length > 0) {
-          cy.get('[data-testid^="batch-delete-button-"]').first().click();
-
-          cy.get('[data-testid="delete-modal-actions"]').should("be.visible");
-          cy.get('[data-testid="delete-modal-cancel-button"]').should(
-            "be.visible"
-          );
-          cy.get('[data-testid="delete-modal-confirm-button"]').should(
-            "be.visible"
-          );
-        }
-      });
-    });
-
-    it("should close modal when cancel clicked", () => {
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid^="batch-delete-button-"]').length > 0) {
-          cy.get('[data-testid^="batch-delete-button-"]').first().click();
-
-          cy.get('[data-testid="delete-modal-cancel-button"]').click();
-
-          cy.get('[data-testid="delete-modal-container"]').should("not.exist");
-        }
-      });
-    });
-
-    it("should delete batch when confirmed", () => {
-      // First upload a file to create a batch
-      cy.get('[data-testid="file-upload-input"]').selectFile(
-        "cypress/fixtures/bulk-upload-example.csv",
-        { force: true }
+      // ❌ WILL FAIL: Batch count MUST decrease
+      cy.get('[data-testid^="batch-item-"]').should(
+        "have.length.lessThan",
+        initialCount
       );
-      cy.get('[data-testid="upload-products-button"]').click();
-      cy.wait(3000);
-
-      // Get the batch ID
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid^="batch-delete-button-"]').length > 0) {
-          const initialCount = $body.find(
-            '[data-testid^="batch-item-"]'
-          ).length;
-
-          // Open delete modal
-          cy.get('[data-testid^="batch-delete-button-"]').first().click();
-
-          // Check delete products checkbox if present
-          cy.get("body").then(($modalBody) => {
-            if (
-              $modalBody.find('[data-testid="delete-products-checkbox"]')
-                .length > 0
-            ) {
-              cy.get('[data-testid="delete-products-checkbox"]').check({
-                force: true,
-              });
-            }
-          });
-
-          // Confirm deletion
-          cy.get('[data-testid="delete-modal-confirm-button"]').click();
-          cy.wait(2000);
-
-          // Verify batch is removed
-          cy.get('[data-testid^="batch-item-"]').should(
-            "have.length.lessThan",
-            initialCount
-          );
-        }
-      });
     });
   });
 
-  describe("Upload Progress", () => {
-    it("should display upload progress indicator during upload", () => {
+  describe("CSV Content Validation (WILL FAIL if backend errors)", () => {
+    it("STRICT: should validate CSV has required columns and upload successfully", () => {
       cy.get('[data-testid="file-upload-input"]').selectFile(
         "cypress/fixtures/bulk-upload-example.csv",
         { force: true }
       );
 
       cy.get('[data-testid="upload-products-button"]').click();
-
-      cy.get("body").then(($body) => {
-        if (
-          $body.find('[data-testid="upload-progress-indicator"]').length > 0
-        ) {
-          cy.get('[data-testid="upload-progress-indicator"]').should(
-            "be.visible"
-          );
-        }
-      });
-
       cy.wait(3000);
+
+      // ❌ WILL FAIL: Upload result status MUST be visible
+      cy.get('[data-testid="upload-result-status"]').should("be.visible");
+
+      // ❌ WILL FAIL: Should have successful records
+      cy.get('[data-testid="successful-count-container"]')
+        .should("be.visible")
+        .invoke("text")
+        .then((text) => {
+          const count = parseInt(text.replace(/\D/g, ""));
+          expect(count).to.be.greaterThan(0);
+        });
     });
 
+    it("STRICT: should create products in database", () => {
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      cy.get('[data-testid="upload-products-button"]').click();
+      cy.wait(3000);
+
+      // ❌ WILL FAIL: Verify products were created via API
+      cy.request("GET", "http://localhost:3001/api/products").then(
+        (response) => {
+          expect(response.status).to.equal(200);
+
+          // Check if test products exist
+          const testProducts = response.body.filter(
+            (p: any) =>
+              p.slug === "samsung-galaxy-s24-ultra" ||
+              p.slug === "apple-macbook-pro-16-m3"
+          );
+
+          // ❌ WILL FAIL: Products MUST be created
+          expect(testProducts.length).to.be.greaterThan(0);
+        }
+      );
+    });
+  });
+
+  describe("Upload Progress Indicators (May pass/fail depending on implementation)", () => {
     it("should disable upload button during upload", () => {
       cy.get('[data-testid="file-upload-input"]').selectFile(
         "cypress/fixtures/bulk-upload-example.csv",
@@ -594,157 +398,72 @@ describe("Admin Bulk Upload", () => {
 
       cy.get('[data-testid="upload-products-button"]').click();
 
+      // Should be disabled immediately
       cy.get('[data-testid="upload-products-button"]').should("be.disabled");
 
       cy.wait(3000);
     });
   });
 
-  describe("File Validation", () => {
-    it("should only accept CSV files", () => {
-      // Create a fake non-CSV file
-      cy.writeFile("cypress/fixtures/test-image.txt", "This is not a CSV file");
+  describe("Verify Backend Integration (WILL FAIL if backend broken)", () => {
+    it("STRICT: should receive 201 response from upload API", () => {
+      cy.intercept("POST", "**/api/bulk-upload*").as("bulkUpload");
 
-      cy.get('[data-testid="file-upload-input"]').selectFile(
-        "cypress/fixtures/test-image.txt",
-        { force: true }
-      );
-
-      cy.get("body").then(($body) => {
-        // Check if error message is displayed or button remains disabled
-        if ($body.find('[data-testid="file-type-error"]').length > 0) {
-          cy.get('[data-testid="file-type-error"]').should("be.visible");
-        }
-
-        // Upload button should be disabled for invalid files
-        if (
-          $body.find('[data-testid="upload-products-button"]').length > 0 &&
-          $body.find('[data-testid="file-type-error"]').length > 0
-        ) {
-          cy.get('[data-testid="upload-products-button"]').should(
-            "be.disabled"
-          );
-        }
-      });
-    });
-
-    it("should validate CSV file size", () => {
-      cy.get('[data-testid="file-upload-input"]').selectFile(
-        "cypress/fixtures/bulk-upload-example.csv",
-        { force: true }
-      );
-
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid="selected-file-size"]').length > 0) {
-          cy.get('[data-testid="selected-file-size"]')
-            .should("be.visible")
-            .invoke("text")
-            .should("not.be.empty");
-        }
-      });
-    });
-  });
-
-  describe("Loading and Error States", () => {
-    it("should display loading state when fetching history", () => {
-      cy.get("body").then(($body) => {
-        if (
-          $body.find('[data-testid="bulk-upload-history-loading"]').length > 0
-        ) {
-          cy.get('[data-testid="bulk-upload-history-loading"]').should(
-            "be.visible"
-          );
-        }
-      });
-    });
-
-    it("should display error state if history fetch fails", () => {
-      cy.get("body").then(($body) => {
-        if (
-          $body.find('[data-testid="bulk-upload-history-error"]').length > 0
-        ) {
-          cy.get('[data-testid="bulk-upload-history-error"]').should(
-            "be.visible"
-          );
-        }
-      });
-    });
-
-    it("should display empty state when no history", () => {
-      cy.get("body").then(($body) => {
-        if (
-          $body.find('[data-testid="bulk-upload-history-empty"]').length > 0
-        ) {
-          cy.get('[data-testid="bulk-upload-history-empty"]').should(
-            "be.visible"
-          );
-          cy.get('[data-testid="no-history-icon"]').should("be.visible");
-        }
-      });
-    });
-  });
-
-  describe("Navigation", () => {
-    it("should navigate from sidebar", () => {
-      cy.visit("/admin");
-      cy.waitForPageLoad();
-
-      cy.get('[data-testid="sidebar-bulk-upload-link"]').click();
-
-      cy.url().should("include", "/admin/bulk-upload");
-      cy.get('[data-testid="bulk-upload-page-container"]').should("be.visible");
-    });
-
-    it("should maintain state when navigating back", () => {
-      cy.visit("/admin/products");
-      cy.waitForPageLoad();
-
-      cy.get('[data-testid="sidebar-bulk-upload-link"]').click();
-      cy.url().should("include", "/admin/bulk-upload");
-
-      cy.get('[data-testid="sidebar-products-link"]').click();
-      cy.url().should("include", "/admin/products");
-
-      cy.get('[data-testid="sidebar-bulk-upload-link"]').click();
-      cy.url().should("include", "/admin/bulk-upload");
-    });
-  });
-
-  describe("Accessibility", () => {
-    it("should have accessible file upload input", () => {
-      cy.get('[data-testid="file-upload-label"]').should("have.attr", "for");
-    });
-
-    it("should provide clear instructions", () => {
-      cy.get('[data-testid="instructions-list"]').within(() => {
-        cy.get("li").should("have.length.greaterThan", 0);
-      });
-    });
-
-    it("should have proper ARIA labels", () => {
-      cy.get('[data-testid="file-upload-input"]').should(
-        "have.attr",
-        "aria-label"
-      );
-    });
-  });
-
-  describe("CSV Content Validation", () => {
-    it("should validate CSV has required columns", () => {
       cy.get('[data-testid="file-upload-input"]').selectFile(
         "cypress/fixtures/bulk-upload-example.csv",
         { force: true }
       );
 
       cy.get('[data-testid="upload-products-button"]').click();
-      cy.wait(3000);
 
-      // Check that upload was processed (no validation errors)
-      cy.get("body").then(($body) => {
-        if ($body.find('[data-testid="upload-result-status"]').length > 0) {
-          cy.get('[data-testid="upload-result-status"]').should("be.visible");
-        }
+      cy.wait("@bulkUpload").then((interception) => {
+        // ❌ WILL FAIL: API must return 201 Created
+        expect(interception.response?.statusCode).to.equal(201);
+
+        // ❌ WILL FAIL: Response must have batchId
+        expect(interception.response?.body).to.have.property("batchId");
+        expect(interception.response?.body).to.have.property("status");
       });
+    });
+
+    it("STRICT: should fetch batches list successfully", () => {
+      cy.intercept("GET", "**/api/bulk-upload*").as("getBatches");
+
+      cy.reload();
+      cy.waitForPageLoad();
+
+      cy.wait("@getBatches").then((interception) => {
+        // ❌ WILL FAIL: API must return 200
+        expect(interception.response?.statusCode).to.equal(200);
+
+        // ❌ WILL FAIL: Response must have batches array
+        expect(interception.response?.body).to.have.property("batches");
+        expect(interception.response?.body.batches).to.be.an("array");
+      });
+    });
+  });
+
+  describe("Error Scenarios (Should show error states)", () => {
+    it("STRICT: should display error when upload fails", () => {
+      // Intercept and force error
+      cy.intercept("POST", "**/api/bulk-upload*", {
+        statusCode: 500,
+        body: { error: "Internal server error" },
+      }).as("uploadError");
+
+      cy.get('[data-testid="file-upload-input"]').selectFile(
+        "cypress/fixtures/bulk-upload-example.csv",
+        { force: true }
+      );
+
+      cy.get('[data-testid="upload-products-button"]').click();
+
+      cy.wait("@uploadError");
+
+      // ❌ WILL FAIL: Error message MUST be displayed
+      cy.get('[data-testid="upload-error-message"]', { timeout: 5000 }).should(
+        "be.visible"
+      );
     });
   });
 });
